@@ -23,6 +23,13 @@ namespace Start_Game
     public partial class MainWindow : Window
     {
         // Player Speed
+
+        List<double> playerStats = new List<double>()
+        {
+            // Player Speed
+            5
+        };
+
         double playerSpeed = 5;
 
         // Enemy Speed
@@ -35,9 +42,12 @@ namespace Start_Game
         // Add Timer for the game -> FrameRate
         DispatcherTimer dispatcherTimer = new DispatcherTimer();
 
+        // Map Size
+        const int mapSize = 100;
+
         // Total Map, with 100 different rooms
         // this is a total life saver https://stackoverflow.com/questions/13601151/dictionary-of-lists 
-        Dictionary<int, List<int>> totalMap = new Dictionary<int, List<int>>(100);
+        Dictionary<int, List<int>> totalMap = new Dictionary<int, List<int>>(mapSize);
 
 
         // Player Hitbox as a rectangle
@@ -53,22 +63,21 @@ namespace Start_Game
         const int objectSize = 40;
 
 
-        // Dirrection Moving
-        enum playerDirrection
-        {
-            up,
-            down,
-            left,
-            right
-        }
 
-        playerDirrection dirrection;
+
+        // Dirrection Moving
+
+        List<string> playerDirrection = new List<string>()
+        {
+            "up",
+            "down",
+            "left",
+            "right"
+        };  
 
 
         // Get the Rooms
         int startRoom;
-        int exitRoom;
-        int lootRoom;
 
         int playerIsInRoom;
 
@@ -90,7 +99,7 @@ namespace Start_Game
         bool nextRoom = false;
 
         // Enemies
-        int enemyCounter = 2;
+        // int enemyCounter = 2;
 
 
         // ANIMATION!!!
@@ -99,31 +108,32 @@ namespace Start_Game
         int frame = 0;
 
         // Sword Animation Time
-        int swordAnimation = 150;
+        int swordAnimation = 50;
 
         // Initial Dirrection
-        playerDirrection initialDirrection;
+        string currentDirrection = "up";
 
 
-        public MainWindow() // This function will load first and therefore be 
+        public MainWindow() // This function will load first
         {
             InitializeComponent();
 
-            for (int i = 0; i < 100; i++)
-            {
-                totalMap[i] = new List<int>() { 0, 1, 2 };
-            }
-
 
             // ORDER OF INITIATION
+            basicMapMake MakingTheMap = new basicMapMake();
+
+            // Step 0
+            // Add lists to dictionary
+            MakingTheMap.addLists(mapSize, totalMap);
 
             // STEP 1
             // Select the Map
-
-            int map = selectMap(1); // supposed to be random number given, but for now, there's only going to be 1 map
+            int map = MakingTheMap.selectMap(1); // supposed to be random number given, but for now, there's only going to be 1 map
 
             // STEP 2
             // Set up the Map
+            // Object cannot be used yet since the map hasn't been fully implemented
+            // MakingTheMap.makeMap(map, startRoom, playerIsInRoom, currentRoom, totalMap);
 
             makeMap(map);
 
@@ -169,91 +179,17 @@ namespace Start_Game
             nextRoom = false;
 
             // Player Movement!
+            playerMovement MoveThePlayer = new playerMovement();
+
+            // Run the Player Movement!
+            currentDirrection = MoveThePlayer.movementChecker(playerStats, PlayerCharacter, objectSize, playerDirrection, playerIsInRoom, nextRoom, currentDirrection);            
 
 
-            // GOING LEFT
-            if (Keyboard.IsKeyDown(Key.Left) && Canvas.GetLeft(PlayerCharacter) > objectSize) // If left key is presssed, and if the key is 5 away from the border
-            {
-                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - playerSpeed); // get the object we want to move then the X value (Set Left). Since we are going left we are going to subteract that X value by how fast the player is moving
-
-                dirrection = playerDirrection.left;
-
-
-            }
-            else if (Canvas.GetLeft(PlayerCharacter) == objectSize) // If touch the boder / exit to another tom
-            {
-
-                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + 300);
-
-                playerIsInRoom--; // going to the left
-
-
-
-                nextRoom = true;
-
-
-            }
-
-            // GOING UP
-            if (Keyboard.IsKeyDown(Key.Up) && Canvas.GetTop(PlayerCharacter) > 0) // if up key is pressed and is 5 away from the top
-            {
-                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) - playerSpeed);
-
-                dirrection = playerDirrection.up;
-
-            }
-            else if (Canvas.GetTop(PlayerCharacter) == 0)
-            {
-                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + 350);
-
-                playerIsInRoom += 10; // Going up by one room
-
-                nextRoom = true;
-            }
-
-
-            // GOING DOWN
-            if (Keyboard.IsKeyDown(Key.Down) && Canvas.GetTop(PlayerCharacter) + (350) < Application.Current.MainWindow.Height) // if down key is pressed and if the location of the player character + it's height is away from the bottom
-            {
-                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + playerSpeed);
-
-                dirrection = playerDirrection.down;
-
-            }
-            else if (Canvas.GetTop(PlayerCharacter) + (350) == Application.Current.MainWindow.Height)
-            {
-                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) - 350);
-
-                playerIsInRoom -= 10; // Going down by one room
-
-                nextRoom = true;
-            }
-
-
-            // GOING RIGHT
-
-            if (Keyboard.IsKeyDown(Key.Right) && Canvas.GetLeft(PlayerCharacter) + 300 < Application.Current.MainWindow.Width) // basically get playter character and it's current width, comparing it to the border which uses the current mainwindow width
-            {
-                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + playerSpeed);
-
-                dirrection = playerDirrection.right;
-
-            }
-            else if (Canvas.GetLeft(PlayerCharacter) + 300 == Application.Current.MainWindow.Width)
-            {
-                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - 350);
-
-                playerIsInRoom++; // going o the right
-
-                nextRoom = true;
-            }
-
+            // Weapon Attack -> Cancelled for now
+            /*
             // Create Object when pressed
             if (Keyboard.IsKeyDown(Key.Space) && weaponCreated == false)
             {
-
-                initialDirrection = dirrection;
-
                 int weaponHeight = 0;
                 int weaponWidth = 0;
                 double weaponPosition = 0;
@@ -261,17 +197,22 @@ namespace Start_Game
                 ImageBrush weaponImage = new ImageBrush();
 
 
+                
 
-                if (initialDirrection == playerDirrection.up || initialDirrection == playerDirrection.down)
+                if (currentDirrection == playerDirrection[0] || currentDirrection == playerDirrection[1]) // If current Dirrection up or down
                 {
                     weaponHeight = 40;
                     weaponWidth = 15;
                     weaponPosition = 4;
 
                 }
-                else if (initialDirrection == playerDirrection.left || initialDirrection == playerDirrection.right)
+                else if (currentDirrection == playerDirrection[2] || currentDirrection == playerDirrection[3]) // if dirrection left or right
                 {
                     weaponHeight = 15;
+                    weaponWidth = 40;
+                    weaponPosition = 4.5;
+                } else
+                {
                     weaponWidth = 40;
                     weaponPosition = 4.5;
                 }
@@ -295,8 +236,7 @@ namespace Start_Game
                 weaponCreated = true;
 
             }
-
-
+            */
 
 
             // Search for players and walls
@@ -324,19 +264,19 @@ namespace Start_Game
 
 
 
-                        if (dirrection == playerDirrection.up) // if going up, push down at the same speed
+                        if (currentDirrection == playerDirrection[0]) // if going up, push down at the same speed
                         {
                             Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + playerSpeed);
                         }
-                        else if (dirrection == playerDirrection.down) // if going down, push up, push up at the same speed
+                        else if (currentDirrection == playerDirrection[1]) // if going down, push up, push up at the same speed
                         {
                             Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) - playerSpeed);
                         }
-                        else if (dirrection == playerDirrection.left) // if going left, push right, push right at the same speed
+                        else if (currentDirrection == playerDirrection[2]) // if going left, push right, push right at the same speed
                         {
                             Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + playerSpeed);
                         }
-                        else if (dirrection == playerDirrection.right) // if going right, push left, push left at the same speed
+                        else if (currentDirrection == playerDirrection[3]) // if going right, push left, push left at the same speed
                         {
                             Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - playerSpeed);
                         }
@@ -385,13 +325,16 @@ namespace Start_Game
 
                             var rt = new RotateTransform();
 
-                            if (initialDirrection == playerDirrection.up)
+                            if (currentDirrection == playerDirrection[0]) //up
                             {
+
+                                rt.Angle = 0;
+
                                 Canvas.SetTop(z, (Canvas.GetTop(PlayerCharacter) - z.Height));
 
                                 Canvas.SetLeft(z, (Canvas.GetLeft(PlayerCharacter) + PlayerCharacter.Width / 2) - z.Width / 2);
                             }
-                            else if (initialDirrection == playerDirrection.down)
+                            else if (currentDirrection == playerDirrection[1]) //down
                             {
                                 rt.Angle = 180;
 
@@ -402,15 +345,17 @@ namespace Start_Game
 
 
                             }
-                            else if (initialDirrection == playerDirrection.left)
+                            else if (currentDirrection == playerDirrection[2]) // left
                             {
+
+                                rt.Angle = 0;
 
                                 Canvas.SetTop(z, (Canvas.GetTop(PlayerCharacter) + PlayerCharacter.Height / 4));
 
                                 Canvas.SetLeft(z, (Canvas.GetLeft(PlayerCharacter) - z.Width));
 
                             }
-                            else if (initialDirrection == playerDirrection.right)
+                            else if (currentDirrection == playerDirrection[3]) // right
                             {
                                 rt.Angle = 180;
 
@@ -545,7 +490,7 @@ namespace Start_Game
 
 
                 }
-                
+
 
 
 
@@ -679,8 +624,6 @@ namespace Start_Game
             if (getMap == 0)
             {
                 startRoom = 56;
-                exitRoom = 76;
-                lootRoom = 64;
             }
 
             playerIsInRoom = startRoom;
@@ -709,7 +652,8 @@ namespace Start_Game
 
                     totalMap[i] = setUpMap;
 
-                } else if (i == 55) // left room
+                }
+                else if (i == 55) // left room
                 {
                     List<int> setUpMap = new List<int>()
                     {
@@ -726,7 +670,8 @@ namespace Start_Game
                     };
 
                     totalMap[i] = setUpMap;
-                } else if (i == 57) // right room
+                }
+                else if (i == 57) // right room
                 {
                     List<int> setUpMap = new List<int>()
                     {
@@ -860,15 +805,16 @@ namespace Start_Game
                         row++;
 
                         string text = "";
-                        
+
                         if (playerIsInRoom == 56)
                         {
                             text = "Welcome to the tutorial! Use the arrow keys to move! Use the spacebar to attack!";
-                        } else if (playerIsInRoom == 55)
+                        }
+                        else if (playerIsInRoom == 55)
                         {
                             text = "Enemies endlessly respawn from set points! If you have a [holy relic] you can stop the spawning but only in that room";
                         }
-  
+
                         // Get Function
                         makeText(text);
                     }
@@ -948,12 +894,625 @@ namespace Start_Game
 
 
     }
+
+
+    // Move Player. This class works!
+    class playerMovement
+    {
+        public string movementChecker(List<double> playerStats, Rectangle PlayerCharacter, int objectSize, List<string> playerDirrection, int playerIsInRoom, bool nextRoom, string currentDirrection)
+        {
+            // Player Movement!
+
+            // GOING LEFT
+            if (Keyboard.IsKeyDown(Key.Left) && Canvas.GetLeft(PlayerCharacter) > objectSize) // If left key is presssed, and if the key is 5 away from the border
+            {
+                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - playerStats[0]); // get the object we want to move then the X value (Set Left). Since we are going left we are going to subteract that X value by how fast the player is moving
+
+                return playerDirrection[2];
+
+
+
+            }
+            else if (Canvas.GetLeft(PlayerCharacter) == objectSize) // If touch the boder / exit to another tom
+            {
+
+                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + 300);
+
+                playerIsInRoom--; // going to the left
+
+
+
+                nextRoom = true;
+
+
+            }
+
+            // GOING UP
+            if (Keyboard.IsKeyDown(Key.Up) && Canvas.GetTop(PlayerCharacter) > 0) // if up key is pressed and is 5 away from the top
+            {
+                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) - playerStats[0]);
+
+                return playerDirrection[0];
+
+            }
+            else if (Canvas.GetTop(PlayerCharacter) == 0)
+            {
+                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + 350);
+
+                playerIsInRoom += 10; // Going up by one room
+
+                nextRoom = true;
+            }
+
+
+            // GOING DOWN
+            if (Keyboard.IsKeyDown(Key.Down) && Canvas.GetTop(PlayerCharacter) + (350) < Application.Current.MainWindow.Height) // if down key is pressed and if the location of the player character + it's height is away from the bottom
+            {
+                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + playerStats[0]);
+
+                return playerDirrection[1];
+
+            }
+            else if (Canvas.GetTop(PlayerCharacter) + (350) == Application.Current.MainWindow.Height)
+            {
+                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) - 350);
+
+                playerIsInRoom -= 10; // Going down by one room
+
+                nextRoom = true;
+            }
+
+
+            // GOING RIGHT
+
+            if (Keyboard.IsKeyDown(Key.Right) && Canvas.GetLeft(PlayerCharacter) + 300 < Application.Current.MainWindow.Width) // basically get playter character and it's current width, comparing it to the border which uses the current mainwindow width
+            {
+                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + playerStats[0]);
+
+                return playerDirrection[3];
+
+            }
+            else if (Canvas.GetLeft(PlayerCharacter) + 300 == Application.Current.MainWindow.Width)
+            {
+                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - 350);
+
+                playerIsInRoom++; // going o the right
+
+                nextRoom = true;
+            }
+
+            return "nothing";
+        }
+    }
+}
+
+        /*
+        private void setMovement()
+        {
+            Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + playerStats[0]);
+
+
+            dirrection = playerDirrection[3];
+        }
+
+        private void movingIntoNewRoom()
+        {
+            Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - 350);
+
+            playerIsInRoom++; // going o the right
+
+            nextRoom = true;
+        }
+    }
+    */
+
+
+
+// Make The map
+// the addList, selectMap works!!! Otherwise, work in progress
+class basicMapMake
+{
+
+    // Step 0
+    // Add Lists to Array
+    public void addLists(int mapSize, Dictionary<int, List<int>> totalMap)
+    {
+        // Maybe turn this into a function
+        for (int i = 0; i < mapSize; i++)
+        {
+            totalMap[i] = new List<int>() { 0 };
+        }
+    }
+
+
+    // STEP 1
+    // Select which map is going to be made
+    public int selectMap(int mapSelect)
+    {
+        return 0; // be random later, but now just the tutorial will be used
+    }
+
+    // STEP 2
+    // Make the Map
+    // THIS WILL BE LARRRRRGEEE!!!
+    // Maybe I should get this from a text file...
+    public void makeMap(int getMap, int startRoom, int playerIsInRoom, List<int> currentRoom, Dictionary<int, List<int>> totalMap)
+    {
+        if (getMap == 0)
+        {
+            startRoom = 56;
+        }
+
+        playerIsInRoom = startRoom;
+
+
+        // INITIAIZE ALL THE CODE INTO THE DICTIONARY
+
+        for (int i = 0; i < 100; i++)
+        {
+
+            currentRoom = totalMap[56];
+        }
+
+
+    }
+
+    //STEP 3
+    // GET THE ROOM BASED ON POSITION IN TOTAL MAP
+    private void getRoom(int getMap, int playerIsInRoom, List<int> currentRoom, Dictionary<int, List<int>> totalMap)
+    {
+
+        currentRoom = totalMap[playerIsInRoom];
+
+        // Actually make the room
+        // makeSurrondings();
+
+    }
+}
+
+/*
+class drawSetting
+{
+    private void makeSurrondings()
+    {
+
+        // Create map. This will be used as the basis for the place where the player moves
+        List<int> room = new List<int>();
+
+        room = currentRoom;
+
+        // extra split
+
+        int col = 0;
+        int row = 0;
+        int section = 10;
+        int generateRoom = 0;
+
+        roomGenerate();
+
+    }
+
+    private void drawObjectBasedOnData()
+    {
+        // Creating a map based on an array
+        while (generateRoom < 100)
+        {
+
+            if (generateRoom < section) // If this part of the array is bellow the length of the map (10)
+            {
+                if (room[generateRoom] == 1) // If the given part of the map has a 1
+                {
+                    // Increase the row
+                    row++;
+
+                    // Get Function
+                    makeWall(row, col, "block");
+
+
+                }
+                else if (room[generateRoom] == 2) // generate a door, unused for now
+                {
+                    row++;
+
+                    // Get Function
+                    makeWall(row, col, "door");
+                }
+                else if (room[generateRoom] == 3) // generate an enemy
+                {
+                    row++;
+
+                    // Get Function
+                    makeEnemy(row, col, "zombie");
+                }
+                else if (room[generateRoom] == 4) // generate an enemy
+                {
+                    row++;
+
+                    // Get Function
+                    makeItem(row, col, "coin");
+                }
+                else if (room[generateRoom] == 5) // generate a textbox
+                {
+                    row++;
+
+                    string text = "";
+
+                    if (playerIsInRoom == 56)
+                    {
+                        text = "Welcome to the tutorial! Use the arrow keys to move! Use the spacebar to attack!";
+                    }
+                    else if (playerIsInRoom == 55)
+                    {
+                        text = "Enemies endlessly respawn from set points! If you have a [holy relic] you can stop the spawning but only in that room";
+                    }
+
+                    // Get Function
+                    makeText(text);
+                }
+                else
+                {
+                    row++; // If this part of the array is 0
+                }
+
+                generateRoom++; // Get to the next part of the array
+
+            }
+            else
+            {
+                // When reading the array goes farther than the length of the map (10) switch to a new row
+                row = 0;
+                col++;
+                section += 10;
+            }
+
+        }
+    }
+
+
+    private void drawObject()
+    {
+        row++;
+
+        // Get Function
+        makeEnemy(row, col, "zombie");
+    }
+}
+}
+
+
+class makeStuff
+{
+private void makeWall(int row, int col, string blockType)
+{
+
+    // Image Brush
+    ImageBrush wallImage = new ImageBrush();
+
+    wallImage.ImageSource = new BitmapImage(new Uri("C:/Users/peter/source/repos/Start_Game/Start_Game/images/2.png"));
+
+    Rectangle newWall = new Rectangle
+    {
+        Tag = "wall",
+        Height = objectSize,
+        Width = objectSize,
+        Fill = wallImage
+    };
+
+    Canvas.SetLeft(newWall, (row * objectSize));
+    Canvas.SetTop(newWall, (col * objectSize));
+
+
+    PlayerSpace.Children.Add(newWall);
+
+
+    // Collect Garbage
+    GC.Collect(); // collect any unused resources for this game
+}
+
+private void makeEnemy(int row, int col, string enemyType)
+{
+    // Image Brush
+    ImageBrush enemyImage = new ImageBrush();
+
+    enemyImage.ImageSource = new BitmapImage(new Uri("C:/Users/peter/source/repos/Start_Game/Start_Game/images/3.png"));
+
+    Rectangle newEnemy = new Rectangle
+    {
+        Tag = "enemy",
+        Height = 20,
+        Width = 20,
+        Fill = enemyImage
+    };
+
+    Canvas.SetLeft(newEnemy, row * objectSize);
+    Canvas.SetTop(newEnemy, col * objectSize);
+
+
+    PlayerSpace.Children.Add(newEnemy);
+
+    // Collect Garbage
+    GC.Collect(); // collect any unused resources for this game
+}
+
+private void makeItem(int row, int col, string itemType)
+{
+    // Image Brush
+    ImageBrush itemImage = new ImageBrush();
+
+    itemImage.ImageSource = new BitmapImage(new Uri("C:/Users/peter/source/repos/Start_Game/Start_Game/images/5.png"));
+
+    Rectangle newItem = new Rectangle
+    {
+        Tag = itemType,
+        Height = 20,
+        Width = 20,
+        Fill = itemImage
+    };
+
+
+    Canvas.SetLeft(newItem, row * objectSize);
+    Canvas.SetTop(newItem, col * objectSize);
+
+
+    PlayerSpace.Children.Add(newItem);
+
+    // Collect Garbage
+    GC.Collect(); // collect any unused resources for this game
+
+}
+
+private void makeText(string innerText)
+{
+
+    DisplayDateTextBlock2.Text += $"{innerText} \n";
+    scroll.ScrollToEnd();
+}
+}
+
+class attack
+{
+private void swordAttack()
+{
+                // Create Object when pressed
+        if (Keyboard.IsKeyDown(Key.Space) && weaponCreated == false)
+        {
+
+            initialDirrection = dirrection;
+
+            int weaponHeight = 0;
+            int weaponWidth = 0;
+            double weaponPosition = 0;
+
+            ImageBrush weaponImage = new ImageBrush();
+
+
+
+            if (initialDirrection == playerDirrection.up || initialDirrection == playerDirrection.down)
+            {
+                weaponHeight = 40;
+                weaponWidth = 15;
+                weaponPosition = 4;
+
+            }
+            else if (initialDirrection == playerDirrection.left || initialDirrection == playerDirrection.right)
+            {
+                weaponHeight = 15;
+                weaponWidth = 40;
+                weaponPosition = 4.5;
+            }
+
+            weaponImage.ImageSource = new BitmapImage(new Uri($"C:/Users/peter/source/repos/Start_Game/Start_Game/images/{weaponPosition}.png"));
+
+            Rectangle newSword = new Rectangle
+            {
+                Tag = "weapon-sword-phys",
+                Height = weaponHeight,
+                Width = weaponWidth,
+                Fill = weaponImage,
+                //Stroke = Brushes.Black
+            };
+
+            PlayerSpace.Children.Add(newSword);
+
+
+            // Add the sword to the screen 
+
+            weaponCreated = true;
+
+        }
+}
+}
+
+class gameLogic
+{
+private void tickRate()
+{
+    dispatcherTimer.Interval = TimeSpan.FromMilliseconds(1); // running the timer every 20 milliseconds
+    dispatcherTimer.Tick += new EventHandler(GameTimerEvent); // linking the timer event
+    dispatcherTimer.Start(); // starting the timer
+
+    PlayerSpace.Focus(); // this is what will be mainly focused on for the program
+}
+}
+
+class getImageClass
+{
+private void imageMaker()
+{
+    // make an image for the player using an image brush
+    // an image brush is a type of tile brush that define it's content as an image by it's Image Source proprety
+    // https://docs.microsoft.com/en-us/dotnet/api/system.windows.media.imagebrush?view=windowsdesktop-6.0
+    ImageBrush playerImage = new ImageBrush();
+
+    // Load tha Player into it
+    // this is a specialized bitmap source using xaml to loading images
+    playerImage.ImageSource = new BitmapImage(new Uri("C:/Users/peter/source/repos/Start_Game/Start_Game/images/1.png"));
+
+    // asign the player the rect
+    // filling the timage with the source
+    PlayerCharacter.Fill = playerImage;
+}
+}
+
+class saveClass
+{
+private void saveRoom(Rectangle c)
+{
+    // Create map. This will be used as the basis for the place where the player moves
+    List<int> room = new List<int>();
+
+    room = currentRoom;
+
+    // extra split
+
+    int col = 0;
+    int row = 0;
+    int section = 2;
+    int generateRoom = 0;
+
+    int checkForItemX = 0;
+
+    // Creating a map based on an array
+    while (generateRoom < 10)
+    {
+
+
+
+        row++;
+
+
+
+        checkForItemX = objectSize * row;
+
+        if (Canvas.GetLeft(c) == checkForItemX)
+        {
+            currentRoom[row + (Convert.ToInt32(Canvas.GetTop(c)) / 4) - 1] = 0;
+
+            // should get currentRoom[27]
+
+        }
+
+
+
+
+        generateRoom++;
+
+
+
+
+
+
+    }
+
+
+}
+}
+
+class setUpRooms
+{
+private void loadRooms()
+{
+    if (i == 56) // Starting Room
+    {
+        List<int> setUpMap = new List<int>()
+                {
+                    1, 1, 1, 1, 0, 0, 1, 1, 1, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 5, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 0, 0, 1, 1, 1, 1
+                };
+
+        totalMap[i] = setUpMap;
+
+    }
+    else if (i == 55) // left room
+    {
+        List<int> setUpMap = new List<int>()
+                {
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 3, 0, 5, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 3, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+                };
+
+        totalMap[i] = setUpMap;
+    }
+    else if (i == 57) // right room
+    {
+        List<int> setUpMap = new List<int>()
+                {
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+                };
+
+        totalMap[i] = setUpMap;
+    }
+    else if (i == 66) // up room
+    {
+        List<int> setUpMap = new List<int>()
+                {
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 4, 4, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 0, 0, 1, 1, 1, 1
+                };
+
+        totalMap[i] = setUpMap;
+    }
+    else if (i == 46) // down room
+    {
+        List<int> setUpMap = new List<int>()
+                {
+                    1, 1, 1, 1, 0, 0, 1, 1, 1, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+                };
+
+        totalMap[i] = setUpMap;
+    }
+}
+}
+
+
 }
 
 
 // Create Grid
 
-
+*/
 
 /*
 
