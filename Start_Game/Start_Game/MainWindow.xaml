@@ -22,15 +22,134 @@
 
     <Canvas x:Name="PlayerSpace" Focusable="True" >
 
+  
+
+        <!-- Main Background -->
+        <Rectangle Tag="background" Canvas.Left="40" Width="400" Height="400" Stroke="Black" Fill="LightGray" />
+
+        <!-- Right Background -->
+        <Rectangle Tag="background" Canvas.Left="460" Width="240" Height="400" Stroke="Black"  />
+
+
+        <!-- Health Bar -->
+        <TextBlock Name="Player1Name" Text="Player 1" Canvas.Left="470" Canvas.Top="37" Height="10" Width="65" FontSize="6"/>
+        <ProgressBar Name="mpBar1" Canvas.Left="600" Canvas.Top="40" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" Foreground="blue" />
+        <ProgressBar Name="PlayerHealth1" Canvas.Left="540" Canvas.Top="40" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" />
+
+        <TextBlock Name="Player2Name" Text="Player 2" Canvas.Left="470" Canvas.Top="57" Height="10" Width="65" FontSize="6"/>
+        <ProgressBar Name="mpBar2" Canvas.Left="600" Canvas.Top="60" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" Foreground="blue" />
+        <ProgressBar Name="PlayerHealth2" Canvas.Left="540" Canvas.Top="60" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" />
+
+        <TextBlock Name="Player3Name" Text="Player 3" Canvas.Left="470" Canvas.Top="77" Height="10" Width="65" FontSize="6"/>
+        <ProgressBar Name="mpBar3" Canvas.Left="600" Canvas.Top="80" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" Foreground="blue" />
+        <ProgressBar Name="PlayerHealth3" Canvas.Left="540" Canvas.Top="80" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" />
+
+        <TextBlock Name="Player4Name" Text="Player 4" Canvas.Left="470" Canvas.Top="97" Height="10" Width="65" FontSize="6"/>
+        <ProgressBar Name="mpBar4" Canvas.Left="600" Canvas.Top="100" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" Foreground="blue" />
+        <ProgressBar Name="PlayerHealth4" Canvas.Left="540" Canvas.Top="100" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" />
+
+        <!-- Health Text -->
+        <TextBlock x:Name="Health" Text="Log " FontSize="16" FontWeight="Bold" Canvas.Top="480" Canvas.Left="10"/>
+
+
+
         <TextBlock x:Name="DisplayDateTextBlock" Text="Log " FontSize="16" FontWeight="Bold" Canvas.Top="480" Canvas.Left="10"/>
         <ScrollViewer Height = "200" Width = "720" Canvas.Left="10" Canvas.Top="500" Name="scroll"
             HorizontalScrollBarVisibility = "Auto" VerticalScrollBarVisibility = "Auto">
-            <TextBlock x:Name="DisplayDateTextBlock2" Text="" FontSize="10" FontWeight="Bold"  />
+            <TextBlock x:Name="logBox" Text="" FontSize="10" FontWeight="Bold"  />
         </ScrollViewer>
+
+
+        <Rectangle x:Name="PlayerCharacter" Tag="player" Width="25" Height="25" Fill="Blue" Stroke="Red" Canvas.Top="200" Canvas.Left="200" StrokeThickness="3"  />
+
+
+        <!-- Title Screen-->
+
         
-        <Rectangle x:Name="PlayerCharacter" Tag="player" Width="25" Height="25" Fill="Blue" Stroke="Red" Canvas.Top="100" Canvas.Left="100" StrokeThickness="3"  />
+        <Canvas Name="TitleSpace">
+            <Rectangle Name="TitleScreen" Width="720" Height="720" Fill="White" Tag="title" />
+
+            <TextBlock Text="Another Dungeon Game" FontSize="30" Tag="title"/>
+
+            <Rectangle Width="450" Height="400" Canvas.Top="60" Canvas.Left="200" Stroke="black" Tag="title"/>
+
+            <Button Content="Start Game" Width="150" Canvas.Top="60" Canvas.Left="20" Tag="title" />
+            <Button Content="The Tutorial" Click="Button_Click_1" Width="150" Canvas.Top="100" Canvas.Left="20" Tag="title"/>
+            <Button Content="There are no settings" Width="150" Canvas.Top="140" Canvas.Left="20" Tag="title" />
+
+
+
+            <GroupBox Header="Make A Player" Margin="10" Padding="10" Canvas.Top="70" Canvas.Left="210" Width="130" Tag="title">
+                <StackPanel>
+                    <TextBlock Text="Name:"/>
+                    <TextBox Name="GetName" />
+                    <TextBlock>Class:</TextBlock>
+                    <ComboBox Name = "classSelect" HorizontalAlignment = "Left" Canvas.Left="210" Canvas.Top="70"
+        VerticalAlignment = "Top" Width = "120" SelectionChanged="comboBox_SelectionChanged">
+                        <ComboBoxItem Content = "Knight"/>
+                        <ComboBoxItem Content = "Squire" />
+                        <ComboBoxItem Content = "Paladin" />
+                        <ComboBoxItem Content = "Red Mage" />
+                        <ComboBoxItem Content = "Dark Mage" />
+                        <ComboBoxItem Content = "Gunslinger" />
+                    </ComboBox>
+
+
+                    <Button Margin="0,20" Click="Button_Click">Add User</Button>
+
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="The Stats" Padding="10" Canvas.Top="85" Canvas.Left="360" Width="200" Tag="title">
+                <StackPanel>
+                    <TextBlock Text="Health:"/>
+                    <TextBlock Name="HpStat" Text=""/>
+
+                    <TextBlock Text="Mp:"/>
+                    <TextBlock Name="MpStat" Text=""/>
+
+                    <TextBlock Text="Physical:"/>
+                    <TextBlock Name="PhysStat" Text=""/>
+
+                    <TextBlock Text="Magic:"/>
+                    <TextBlock Name="MagStat" Text=""/>
+
+                    <TextBlock Text="Gun:"/>
+                    <TextBlock Name="GunStat" Text=""/>
+
+                    <TextBlock Text="Phys Def"/>
+                    <TextBlock Name="PhysDefStat" Text=""/>
+
+                    <TextBlock Text="Mag Def:"/>
+                    <TextBlock Name="MagDefStat" Text=""/>
+
+                    <TextBlock Text="Speed:"/>
+                    <TextBlock Name="SpeedStat"/>
+
+                    <TextBlock Text="Mp Regen:"/>
+                    <TextBlock Name="MpRegenStat" Text=""/>
+
+                    <TextBlock Text="Size:"/>
+                    <TextBlock Name="SizeStat" Text=""/>
+
+                </StackPanel>
+            </GroupBox>
+
+
+            <TextBlock Name="PlayersBlock" Width="450" Height="150" Canvas.Top="480" Canvas.Left="200" Tag="title"/>
+
+
+            <TextBlock Name="ClassDisplay" TextWrapping="WrapWithOverflow" Width="130" Height="159" Canvas.Top="260" Canvas.Left="220" Text="" Tag="title"/>
+        </Canvas>
+        
+        
+
 
     </Canvas>
+
+
+
+
+
 
 
 
