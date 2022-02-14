@@ -22,13 +22,28 @@
 
     <Canvas x:Name="PlayerSpace" Focusable="True" >
 
-  
+
 
         <!-- Main Background -->
         <Rectangle Tag="background" Canvas.Left="40" Width="400" Height="400" Stroke="Black" Fill="LightGray" />
+        <Rectangle Tag="background" Canvas.Left="40" Canvas.Top="400" Width="400" Height="20" Stroke="Black" Fill="LightGray" />
+        <TextBlock Name="DamageDeltBlock" Text="" Canvas.Left="40" Canvas.Top="400" Width="400"/>
+        <ProgressBar Name="EnemyHealth" Canvas.Left="40" Canvas.Top="420" Minimum="0" Maximum="500" Value="500" Height="10" Width="400" Foreground="red" />
+
+
+
+        <!-- Next Room -->
+        <Rectangle Tag="background" Name="left" Canvas.Left="0" Canvas.Top="0" Width="40" Height="400"/>
+        <Rectangle Tag="background" Name="right" Canvas.Left="440" Canvas.Top="0" Width="40" Height="400"/>
+        <Rectangle Tag="background" Name="up" Canvas.Left="40" Canvas.Top="-40" Width="400" Height="40"/>
+        <Rectangle Tag="background" Name="down" Canvas.Left="40" Canvas.Top="400" Width="400" Height="40" />
+
 
         <!-- Right Background -->
-        <Rectangle Tag="background" Canvas.Left="460" Width="240" Height="400" Stroke="Black"  />
+        <Rectangle Tag="background" Canvas.Left="460" Width="240" Height="400" Stroke="Black"/>
+
+        <!-- Inventory Space -->
+        <TextBlock Tag="background" Name="Inventory" Canvas.Left="460" Width="240" Height="276" Text="" Canvas.Top="124" FontSize="7" TextWrapping="WrapWithOverflow"/>
 
 
         <!-- Health Bar -->
@@ -54,9 +69,9 @@
 
 
         <TextBlock x:Name="DisplayDateTextBlock" Text="Log " FontSize="16" FontWeight="Bold" Canvas.Top="480" Canvas.Left="10"/>
-        <ScrollViewer Height = "200" Width = "720" Canvas.Left="10" Canvas.Top="500" Name="scroll"
+        <ScrollViewer Height = "200" Width = "505" Canvas.Left="10" Canvas.Top="500" Name="scroll"
             HorizontalScrollBarVisibility = "Auto" VerticalScrollBarVisibility = "Auto">
-            <TextBlock x:Name="logBox" Text="" FontSize="10" FontWeight="Bold"  />
+            <TextBlock x:Name="logBox" Text="" FontSize="10" FontWeight="Bold" TextWrapping="WrapWithOverflow" Width="490" Height="174" />
         </ScrollViewer>
 
 
@@ -65,13 +80,14 @@
 
         <!-- Title Screen-->
 
+
         
         <Canvas Name="TitleSpace">
             <Rectangle Name="TitleScreen" Width="720" Height="720" Fill="White" Tag="title" />
 
             <TextBlock Text="Another Dungeon Game" FontSize="30" Tag="title"/>
 
-            <Rectangle Width="450" Height="400" Canvas.Top="60" Canvas.Left="200" Stroke="black" Tag="title"/>
+            <Rectangle Width="500" Height="400" Canvas.Top="60" Canvas.Left="200" Stroke="black" Tag="title"/>
 
             <Button Content="Start Game" Width="150" Canvas.Top="60" Canvas.Left="20" Tag="title" />
             <Button Content="The Tutorial" Click="Button_Click_1" Width="150" Canvas.Top="100" Canvas.Left="20" Tag="title"/>
@@ -99,49 +115,17 @@
 
                 </StackPanel>
             </GroupBox>
-            <GroupBox Header="The Stats" Padding="10" Canvas.Top="85" Canvas.Left="360" Width="200" Tag="title">
-                <StackPanel>
-                    <TextBlock Text="Health:"/>
-                    <TextBlock Name="HpStat" Text=""/>
-
-                    <TextBlock Text="Mp:"/>
-                    <TextBlock Name="MpStat" Text=""/>
-
-                    <TextBlock Text="Physical:"/>
-                    <TextBlock Name="PhysStat" Text=""/>
-
-                    <TextBlock Text="Magic:"/>
-                    <TextBlock Name="MagStat" Text=""/>
-
-                    <TextBlock Text="Gun:"/>
-                    <TextBlock Name="GunStat" Text=""/>
-
-                    <TextBlock Text="Phys Def"/>
-                    <TextBlock Name="PhysDefStat" Text=""/>
-
-                    <TextBlock Text="Mag Def:"/>
-                    <TextBlock Name="MagDefStat" Text=""/>
-
-                    <TextBlock Text="Speed:"/>
-                    <TextBlock Name="SpeedStat"/>
-
-                    <TextBlock Text="Mp Regen:"/>
-                    <TextBlock Name="MpRegenStat" Text=""/>
-
-                    <TextBlock Text="Size:"/>
-                    <TextBlock Name="SizeStat" Text=""/>
-
-                </StackPanel>
-            </GroupBox>
 
 
             <TextBlock Name="PlayersBlock" Width="450" Height="150" Canvas.Top="480" Canvas.Left="200" Tag="title"/>
 
 
             <TextBlock Name="ClassDisplay" TextWrapping="WrapWithOverflow" Width="130" Height="159" Canvas.Top="260" Canvas.Left="220" Text="" Tag="title"/>
+
+            <TextBlock Name="CurrentPlayersBlock" TextWrapping="WrapWithOverflow" Width="295" Height="339" Canvas.Top="90" Canvas.Left="370" Text="" Tag="title" FontSize="10"/>
+
         </Canvas>
-        
-        
+
 
 
     </Canvas>
