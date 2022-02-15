@@ -28,7 +28,7 @@
         <Rectangle Tag="background" Canvas.Left="40" Width="400" Height="400" Stroke="Black" Fill="LightGray" />
         <Rectangle Tag="background" Canvas.Left="40" Canvas.Top="400" Width="400" Height="20" Stroke="Black" Fill="LightGray" />
         <TextBlock Name="DamageDeltBlock" Text="" Canvas.Left="40" Canvas.Top="400" Width="400"/>
-        <ProgressBar Name="EnemyHealth" Canvas.Left="40" Canvas.Top="420" Minimum="0" Maximum="500" Value="500" Height="10" Width="400" Foreground="red" />
+        <ProgressBar Name="EnemyHealth" Canvas.Left="40" Canvas.Top="420" Minimum="0" Maximum="100" Value="500" Height="10" Width="400" Foreground="red" />
 
 
 

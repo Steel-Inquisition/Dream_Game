@@ -35,12 +35,15 @@ namespace Start_Game
 
         List<double> playerStats = new List<double>()
         {
-      // image, Health, MP, Phys, Magic, Gun, Phys Def, Mag Def, Speed, mp regen, Size, weapon
-            0, 100, 100, 10, 10, 10, 10, 10, 5, 10, 25, 0
+      // image, Health, MP, Phys, Magic, Gun, Phys Def, Mag Def, Speed, mp regen, Size, weapon, max hp, max mp
+            0, 100, 100, 10, 10, 10, 10, 10, 5, 10, 25, 0, 100, 100, 100, 100
         };
 
         // Current Stat
         int currentStat = 0;
+
+        // Knockback
+        int knockBack = 60;
 
         // total players
         const int maxPlayers = 4;
@@ -64,8 +67,8 @@ namespace Start_Game
 
         List<double> enemyStats = new List<double>()
         {
-            // image, hp, Enemy Speed, damage, Phys Def, Mag Def, type, isRanged, drop, size, difficulty, species, 
-            1, 500, 0.6, 10, 5, 5, 0,  0, 0, 20, 0, 0
+            // image, hp, Enemy Speed, damage, Phys Def, Mag Def, type, isRanged, drop, size, difficulty, species, knockback, is mp, is phys
+            1, 200, 0.6, 10, 5, 5, 0,  0, 0, 20, 0, 0, 30, 0, 0
         };
 
         // Create a list for items that will be removed
@@ -305,7 +308,7 @@ namespace Start_Game
             // RUN THINGS HERE
 
             // Set bars to player stats
-            DrawTheStats.setBarToCurrentStats(PlayerHealth1, PlayerHealth2, PlayerHealth3, PlayerHealth4, totalPlayers, playerPosition);
+            DrawTheStats.setBarToCurrentStats(PlayerHealth1, PlayerHealth2, PlayerHealth3, PlayerHealth4, totalPlayers, playerPosition, mpBar1, mpBar2, mpBar3, mpBar4);
 
 
             // Making Things
@@ -313,6 +316,11 @@ namespace Start_Game
 
             // Check Which Character is Active
             playerPosition = MoveThePlayer.switchPlayers(playerPosition, totalPlayers, dispatcherTimer);
+
+            if (playerPosition == 4)
+            {
+                playerPosition = 0;
+            }
 
             // Run the Player Movement!
             currentDirrection = MoveThePlayer.movementChecker(totalPlayers, PlayerCharacter, objectSize, playerDirrection, playerIsInRoom, nextRoom, currentDirrection, playerPosition);
@@ -341,9 +349,9 @@ namespace Start_Game
             CheckingForInterations.checkingWall(PlayerSpace, IfInteract, PlayerHitbox, currentDirrection, playerDirrection, PlayerCharacter, totalPlayers, playerPosition);
             CheckingForInterations.checkingItem(PlayerSpace, IfInteract, PlayerHitbox, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize);
 
-            weaponCreated = CheckingForInterations.checkingWeapon(PlayerSpace, IfInteract, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection);
+            weaponCreated = CheckingForInterations.checkingWeapon(PlayerSpace, IfInteract, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition);
 
-            CheckingForInterations.checkingEnemy(PlayerSpace, IfInteract, PlayerCharacter, enemyStats, PlayerHitbox, itemstoremove, dispatcherTimer, logBox, totalPlayers, playerPosition, totalEnemies, enemyPosition, DealDamage, totalWeapon, enemyId, DamageDeltBlock, EnemyHealth);
+            CheckingForInterations.checkingEnemy(PlayerSpace, IfInteract, PlayerCharacter, enemyStats, PlayerHitbox, itemstoremove, dispatcherTimer, logBox, totalPlayers, playerPosition, totalEnemies, enemyPosition, DealDamage, totalWeapon, enemyId, DamageDeltBlock, EnemyHealth, oldDirrection, playerDirrection, knockBack);
 
 
 
@@ -377,18 +385,18 @@ namespace Start_Game
                 DrawTheSetting.makeSurrondings(currentRoom, map, playerIsInRoom, MakingTheObjects, PlayerSpace, objectSize, logBox, scroll, totalMap, totalEnemies, enemyPosition, SetUpTheEnemy, enemyId);
 
 
-                for (int i = 0; i < enemyId.Count; i++)
-                { // print numbers from 1 to 5
-                    totalEnemies[i][1] = 500;
-                }
+            }
 
+            if (totalPlayers[playerPosition][2] < totalPlayers[playerPosition][13])
+            {
+                totalPlayers[playerPosition][2] += 1;
             }
 
         }
 
         private void EndGame()
         {
-             // Check if dead, if so, end game
+            // Check if dead, if so, end game
             if (totalPlayers[0][1] <= 0 && totalPlayers[1][1] <= 0 && totalPlayers[2][1] <= 0 && totalPlayers[3][1] <= 0)
             {
                 MessageBox.Show("GAME OVER!!! ALL YOUR CHARACTERS ARE DEAD!!!");
@@ -477,7 +485,7 @@ namespace Start_Game
                 // Dagger
                 List<double> weapon = new List<double>()
                 {
-                 0, 10, 30, 15, 0, 0, 0, 0
+                 0, 10, 30, 15, 0, 0, 0, 0, 70
                 };
 
                 if (makingAllWeapons)
@@ -496,7 +504,7 @@ namespace Start_Game
                 // Sword
                 List<double> weapon = new List<double>()
                 {
-                 1, 20, 45, 15, 0, 0, 0, 0
+                 1, 20, 45, 15, 0, 0, 0, 0, 50
                 };
 
                 if (makingAllWeapons)
@@ -513,7 +521,7 @@ namespace Start_Game
                 // Spear
                 List<double> weapon = new List<double>()
                 {
-                 2, 20, 70, 5, 0, 0, 0, 0
+                 2, 20, 70, 5, 0, 0, 0, 0, 20
                 };
 
                 if (makingAllWeapons)
@@ -530,7 +538,7 @@ namespace Start_Game
                 // Gun
                 List<double> weapon = new List<double>()
                 {
-                 3, 5, 10, 10, 1, 1, 0, 1
+                 3, 5, 10, 10, 1, 1, 0, 1, 0
                 };
 
                 if (makingAllWeapons)
@@ -547,7 +555,7 @@ namespace Start_Game
                 // Fire Book
                 List<double> weapon = new List<double>()
                 {
-                 4, 40, 50, 50, 2, 0, 40, 0
+                 4, 40, 50, 50, 2, 0, 80, 0, 60
                 };
 
                 if (makingAllWeapons)
@@ -564,7 +572,7 @@ namespace Start_Game
                 // Crimson Death
                 List<double> weapon = new List<double>()
                 {
-                 5, 10, 70, 10, 2, 0, 20, 0
+                 5, 80, 70, 10, 2, 0, 100, 0, 30
                 };
 
                 if (makingAllWeapons)
@@ -611,12 +619,12 @@ namespace Start_Game
 
         }
 
-        public void increaseStats(List<double> playerStats, int imageUsed, int IncreaseHealth, int IncreasedMP, int IncreasePhysical, int IncreaseMagic, int IncreaseGun, int IncreasePhysicalDefence, int IncreaseMagicalDefenceStat, int IncreaseSpeedStat, int IncreaseMpRegenStat, int IncreaseSizeStat, int weaponUsed)
+        public void increaseStats(List<double> playerStats, int imageUsed, int IncreaseHealth, int IncreasedMP, int IncreasePhysical, int IncreaseMagic, int IncreaseGun, int IncreasePhysicalDefence, int IncreaseMagicalDefenceStat, int IncreaseSpeedStat, double IncreaseMpRegenStat, int IncreaseSizeStat, int weaponUsed, int IncreaseHpMax, int IncreaseMpMax)
         {
             // make list of stats
-            List<int> currentStats = new List<int>()
+            List<double> currentStats = new List<double>()
             {
-                imageUsed, IncreaseHealth, IncreasedMP, IncreasePhysical, IncreaseMagic, IncreaseGun, IncreasePhysicalDefence, IncreaseMagicalDefenceStat, IncreaseSpeedStat, IncreaseMpRegenStat, IncreaseSizeStat, weaponUsed
+                imageUsed, IncreaseHealth, IncreasedMP, IncreasePhysical, IncreaseMagic, IncreaseGun, IncreasePhysicalDefence, IncreaseMagicalDefenceStat, IncreaseSpeedStat, IncreaseMpRegenStat, IncreaseSizeStat, weaponUsed, IncreaseHpMax, IncreaseMpMax
             };
 
             for (int i = 0; i < currentStats.Count; i++)
@@ -628,19 +636,36 @@ namespace Start_Game
         }
 
 
-        public void setBarToCurrentStats(ProgressBar PlayerHealth1, ProgressBar PlayerHealth2, ProgressBar PlayerHealth3, ProgressBar PlayerHealth4, Dictionary<double, List<double>> totalPlayers, int playerPosition)
+        public void setBarToCurrentStats(ProgressBar PlayerHealth1, ProgressBar PlayerHealth2, ProgressBar PlayerHealth3, ProgressBar PlayerHealth4, Dictionary<double, List<double>> totalPlayers, int playerPosition, ProgressBar mpBar1, ProgressBar mpBar2, ProgressBar mpBar3, ProgressBar mpBar4)
         {
             PlayerHealth1.Value = totalPlayers[0][1];
             PlayerHealth2.Value = totalPlayers[1][1];
             PlayerHealth3.Value = totalPlayers[2][1];
             PlayerHealth4.Value = totalPlayers[3][1];
 
+            PlayerHealth1.Maximum = totalPlayers[0][12];
+            PlayerHealth2.Maximum = totalPlayers[1][12];
+            PlayerHealth3.Maximum = totalPlayers[2][12];
+            PlayerHealth4.Maximum = totalPlayers[3][12];
+
+
+
+            mpBar1.Value = totalPlayers[0][2];
+            mpBar2.Value = totalPlayers[1][2];
+            mpBar3.Value = totalPlayers[2][2];
+            mpBar4.Value = totalPlayers[3][2];
+
+            mpBar1.Maximum = totalPlayers[0][13];
+            mpBar2.Maximum = totalPlayers[1][13];
+            mpBar3.Maximum = totalPlayers[2][13];
+            mpBar4.Maximum = totalPlayers[3][13];
+
         }
 
 
         public int addPlayer(List<double> playerStats, ComboBox classSelect, showStats DrawTheStats, Dictionary<double, List<double>> totalPlayers, int currentStat, TextBlock Player1Name, TextBlock Player2Name, TextBlock Player3Name, TextBlock Player4Name, TextBox GetName, Dictionary<double, List<double>> totalWeapon, TextBlock CurrentPlayersBlock, addWeapon AddingANewWeapon, int countWeapons, bool makingAllWeapons)
         {
-            playerStats = new List<double> { 0, 100, 100, 10, 10, 10, 10, 10, 5, 10, 25, 0 };
+            playerStats = new List<double> { 0, 100, 100, 10, 10, 10, 10, 10, 5, 0, 25, 0, 100, 100 };
 
             string className = classSelect.SelectedItem.ToString();
 
@@ -650,7 +675,7 @@ namespace Start_Game
             if (className == "System.Windows.Controls.ComboBoxItem: Knight")
             {
                 //0, 1, 2, 3, 4, 5, 6, 7
-                DrawTheStats.increaseStats(playerStats, 0, 0, 0, 5, 0, 0, 3, 0, -3, 0, 0, 1);
+                DrawTheStats.increaseStats(playerStats, 0, 20, 0, 5, 0, 0, 3, 0, -3, 0, 0, 1, 20, 0);
 
                 totalPlayers[currentStat] = playerStats;
 
@@ -660,7 +685,7 @@ namespace Start_Game
             else if (className == "System.Windows.Controls.ComboBoxItem: Squire")
             {
                 //0, 1, 2, 3, 4, 5, 6, 7
-                DrawTheStats.increaseStats(playerStats, 1, -50, 0, -1, -1, -1, -1, -1, 3, 0, 0, 0);
+                DrawTheStats.increaseStats(playerStats, 1, -20, 0, -1, -1, -1, -1, -1, 3, 0, 0, 0, -20, 0);
 
                 totalPlayers[currentStat] = playerStats;
 
@@ -669,7 +694,7 @@ namespace Start_Game
             else if (className == "System.Windows.Controls.ComboBoxItem: Paladin")
             {
                 //0, 1, 2, 3, 4, 5, 6, 7
-                DrawTheStats.increaseStats(playerStats, 2, 10, 0, 2, -5, -5, 10, 5, -2, 0, 5, 2);
+                DrawTheStats.increaseStats(playerStats, 2, 50, 0, 2, -5, -5, 10, 5, -2, 0, 5, 2, 50, 0);
 
                 totalPlayers[currentStat] = playerStats;
 
@@ -679,7 +704,7 @@ namespace Start_Game
             else if (className == "System.Windows.Controls.ComboBoxItem: Red Mage")
             {
                 //0, 1, 2, 3, 4, 5, 6, 7
-                DrawTheStats.increaseStats(playerStats, 3, 0, 20, -3, 6, -3, 0, 0, 0, 3, 0, 4);
+                DrawTheStats.increaseStats(playerStats, 3, -10, 50, -3, 6, -3, 0, 0, 0, 40, 0, 4, -10, 50);
 
                 totalPlayers[currentStat] = playerStats;
 
@@ -689,7 +714,7 @@ namespace Start_Game
             else if (className == "System.Windows.Controls.ComboBoxItem: Dark Mage")
             {
                 //0, 1, 2, 3, 4, 5, 6, 7
-                DrawTheStats.increaseStats(playerStats, 4, 0, 20, 3, 3, -3, -3, 0, 0, 3, 0, 5);
+                DrawTheStats.increaseStats(playerStats, 4, -10, 50, 3, 3, -3, -3, 0, 0, 20, 0, 5, -10, 50);
 
                 totalPlayers[currentStat] = playerStats;
 
@@ -699,7 +724,7 @@ namespace Start_Game
             else if (className == "System.Windows.Controls.ComboBoxItem: Gunslinger")
             {
                 //0, 1, 2, 3, 4, 5, 6, 7
-                DrawTheStats.increaseStats(playerStats, 5, 0, -100, 5, -10, 10, 10, -10, 0, -10, 0, 3);
+                DrawTheStats.increaseStats(playerStats, 5, 20, -100, 5, -10, 10, 10, -10, 0, -5, 0, 3, 20, 0);
 
                 totalPlayers[currentStat] = playerStats;
 
@@ -820,7 +845,7 @@ namespace Start_Game
 
         }
 
-        public bool checkingWeapon(Canvas PlayerSpace, typeInteractionChecker IfInteract, bool weaponCreated, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, animationMaker MakingAnimation, int frame, int swordAnimation, List<Rectangle> itemstoremove, string oldDirrection)
+        public bool checkingWeapon(Canvas PlayerSpace, typeInteractionChecker IfInteract, bool weaponCreated, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, animationMaker MakingAnimation, int frame, int swordAnimation, List<Rectangle> itemstoremove, string oldDirrection, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition)
         {
             // Checking for Weapon
             foreach (var z in PlayerSpace.Children.OfType<Rectangle>())
@@ -830,7 +855,33 @@ namespace Start_Game
                 {
                     Rect sword = new Rect(Canvas.GetLeft(z), Canvas.GetTop(z), z.Width, z.Height);
 
-                    return weaponCreated = IfInteract.swordInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection);
+                    // if weapon is type magic and if the mp is above or equal mp cost
+                    if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 2 && totalPlayers[playerPosition][2] >= totalWeapon[(totalPlayers[playerPosition][11])][6])
+                    {
+                        // Subtract mp by mp cost of weapon
+                        totalPlayers[playerPosition][2] -= totalWeapon[(totalPlayers[playerPosition][11])][6];
+
+                        return weaponCreated = IfInteract.swordInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition);
+                    }
+                    else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 0)
+                    {
+                        return weaponCreated = IfInteract.swordInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition);
+                    }
+                    else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 1)
+                    {
+                        // later
+
+                        return weaponCreated;
+                    }
+                    else if (totalPlayers[playerPosition][2] < totalPlayers[playerPosition][13])
+                    {
+
+                        z.Height = 0;
+                        z.Width = 0;
+
+                        return weaponCreated = IfInteract.swordInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition);
+                    }
+
 
                 }
 
@@ -842,7 +893,7 @@ namespace Start_Game
 
         }
 
-        public void checkingEnemy(Canvas PlayerSpace, typeInteractionChecker IfInteract, Rectangle PlayerCharacter, List<double> enemyStats, Rect PlayerHitbox, List<Rectangle> itemstoremove, DispatcherTimer dispatcherTimer, TextBlock logBox, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalEnemies, int enemyPosition, combat DealDamage, Dictionary<double, List<double>> totalWeapon, List<int> enemyId, TextBlock DamageDeltBlock, ProgressBar EnemyHealth)
+        public void checkingEnemy(Canvas PlayerSpace, typeInteractionChecker IfInteract, Rectangle PlayerCharacter, List<double> enemyStats, Rect PlayerHitbox, List<Rectangle> itemstoremove, DispatcherTimer dispatcherTimer, TextBlock logBox, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalEnemies, int enemyPosition, combat DealDamage, Dictionary<double, List<double>> totalWeapon, List<int> enemyId, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, string oldDirrection, List<string> playerDirrection, int knockBack)
         {
             // Checking for enemy
             foreach (var y in PlayerSpace.Children.OfType<Rectangle>())
@@ -853,7 +904,9 @@ namespace Start_Game
                     {
                         Rect enemy = new Rect(Canvas.GetLeft(y), Canvas.GetTop(y), y.Width, y.Height);
 
-                        IfInteract.enemyInteract(y, PlayerCharacter, enemyStats, PlayerHitbox, enemy, itemstoremove, dispatcherTimer, logBox, PlayerSpace, totalPlayers, playerPosition, totalEnemies, enemyPosition, DealDamage, totalWeapon, i, DamageDeltBlock, EnemyHealth);
+                        IfInteract.enemyInteract(y, PlayerCharacter, enemyStats, PlayerHitbox, enemy, itemstoremove, dispatcherTimer, logBox, PlayerSpace, totalPlayers, playerPosition, totalEnemies, enemyPosition, DealDamage, totalWeapon, i, DamageDeltBlock, EnemyHealth, oldDirrection, playerDirrection, knockBack);
+
+
                     }
                 }
 
@@ -911,13 +964,16 @@ namespace Start_Game
         }
 
 
-        public bool swordInteract(Rectangle z, bool weaponCreated, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, animationMaker MakingAnimation, int frame, int swordAnimation, List<Rectangle> itemstoremove, string oldDirrection)
+        public bool swordInteract(Rectangle z, bool weaponCreated, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, animationMaker MakingAnimation, int frame, int swordAnimation, List<Rectangle> itemstoremove, string oldDirrection, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition)
         {
 
             if (oldDirrection == "nothing")
             {
                 oldDirrection = currentDirrection;
             }
+
+
+
 
             // Follow the Player Perfectly
 
@@ -991,7 +1047,7 @@ namespace Start_Game
         }
 
 
-        public void enemyInteract(Rectangle y, Rectangle PlayerCharacter, List<double> enemyStats, Rect PlayerHitbox, Rect enemy, List<Rectangle> itemstoremove, DispatcherTimer dispatcherTimer, TextBlock logBox, Canvas PlayerSpace, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalEnemies, int enemyPosition, combat DealDamage, Dictionary<double, List<double>> totalWeapon, int i, TextBlock DamageDeltBlock, ProgressBar EnemyHealth)
+        public void enemyInteract(Rectangle y, Rectangle PlayerCharacter, List<double> enemyStats, Rect PlayerHitbox, Rect enemy, List<Rectangle> itemstoremove, DispatcherTimer dispatcherTimer, TextBlock logBox, Canvas PlayerSpace, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalEnemies, int enemyPosition, combat DealDamage, Dictionary<double, List<double>> totalWeapon, int i, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, string oldDirrection, List<string> playerDirrection, int knockBack)
         {
             // See if the player is interacting with the enemy
 
@@ -1023,7 +1079,8 @@ namespace Start_Game
             // hit box
             if (PlayerHitbox.IntersectsWith(enemy))
             {
-                totalPlayers[playerPosition][1] -= 10; // replace this later please
+
+                DealDamage.enemyAttackPlayer(playerDirrection, PlayerCharacter, totalEnemies, i, totalPlayers, playerPosition);
             }
 
 
@@ -1038,7 +1095,7 @@ namespace Start_Game
                     if (enemy.IntersectsWith(sword))
                     {
 
-                        DealDamage.playerAttackEnemy(totalEnemies, enemyPosition, itemstoremove, y, playerPosition, totalWeapon, totalPlayers, i, logBox, DamageDeltBlock, EnemyHealth);
+                        DealDamage.playerAttackEnemy(totalEnemies, enemyPosition, itemstoremove, y, playerPosition, totalWeapon, totalPlayers, i, logBox, DamageDeltBlock, EnemyHealth, oldDirrection, playerDirrection, knockBack);
 
 
                     }
@@ -1063,7 +1120,7 @@ namespace Start_Game
 
     class combat
     {
-        public void playerAttackEnemy(Dictionary<double, List<double>> totalEnemies, int enemyPosition, List<Rectangle> itemstoremove, Rectangle y, int playerPosition, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int i, TextBlock logBox, TextBlock DamageDeltBlock, ProgressBar EnemyHealth)
+        public void playerAttackEnemy(Dictionary<double, List<double>> totalEnemies, int enemyPosition, List<Rectangle> itemstoremove, Rectangle y, int playerPosition, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int i, TextBlock logBox, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, string oldDirrection, List<string> playerDirrection, int knockBack)
         {
 
             // Deal Damage to enemy based on weapon
@@ -1083,13 +1140,35 @@ namespace Start_Game
                 // Gun
                 damage += totalPlayers[playerPosition][5];
             }
-            else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 2)
+            else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 2 && totalPlayers[playerPosition][2] > 0)
             {
 
                 // Magic
                 damage += totalPlayers[playerPosition][4];
                 damage -= totalEnemies[enemyPosition][5];
             }
+
+            if (oldDirrection == playerDirrection[0]) //up
+            {
+                Canvas.SetTop(y, Canvas.GetTop(y) - totalWeapon[(totalPlayers[playerPosition][11])][8]);
+
+            }
+            else if (oldDirrection == playerDirrection[1]) //down
+            {
+
+                Canvas.SetTop(y, Canvas.GetTop(y) + totalWeapon[(totalPlayers[playerPosition][11])][8]);
+
+            }
+
+            if (oldDirrection == playerDirrection[2]) // left
+            {
+                Canvas.SetLeft(y, Canvas.GetLeft(y) - totalWeapon[(totalPlayers[playerPosition][11])][8]);
+            }
+            else if (oldDirrection == playerDirrection[3]) // right
+            {
+                Canvas.SetLeft(y, Canvas.GetLeft(y) + totalWeapon[(totalPlayers[playerPosition][11])][8]);
+            }
+
 
 
             totalEnemies[i][1] -= damage;
@@ -1105,6 +1184,50 @@ namespace Start_Game
             }
 
             // totalPlayers[playerPosition][1]
+        }
+
+        public void enemyAttackPlayer(List<string> playerDirrection, Rectangle PlayerCharacter, Dictionary<double, List<double>> totalEnemies, int i, Dictionary<double, List<double>> totalPlayers, int playerPosition)
+        {
+
+            double damage = totalEnemies[i][3];
+
+            if (totalEnemies[i][6] == 0) // phys
+            {
+                damage += totalEnemies[i][13];
+                damage -= totalPlayers[playerPosition][6];
+
+
+            }
+            else if (totalEnemies[i][6] == 1) // magic
+            {
+                damage += totalEnemies[i][1];
+                damage -= totalPlayers[playerPosition][7];
+            }
+
+
+            if (playerDirrection[0] == "up") //up
+            {
+                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) - totalEnemies[i][12]);
+
+            }
+            else if (playerDirrection[1] == "down") //down
+            {
+
+                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + totalEnemies[i][12]);
+
+            }
+
+            if (playerDirrection[2] == "left") // left
+            {
+                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - totalEnemies[i][12]);
+            }
+            else if (playerDirrection[3] == "right") // right
+            {
+                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + totalEnemies[i][12]);
+            }
+
+            totalPlayers[playerPosition][1] -= damage; // replace this later please
+
         }
 
     }
@@ -1182,13 +1305,13 @@ namespace Start_Game
         {
             // Player Movement!
 
-            double speed = totalPlayers[playerPosition][8];
+            double speed;
 
             // if player dies while moving, just set it to five
-            if (speed == null)
-            {
-                speed = 5;
-            }
+
+
+            speed = totalPlayers[playerPosition][8];
+
 
             // GOING LEFT
             if (Keyboard.IsKeyDown(Key.Left)) // If left key is presssed, and if the key is 5 away from the border
@@ -1757,19 +1880,14 @@ namespace Start_Game
     {
         public int loadEnemies(Dictionary<double, List<double>> totalEnemies, int enemyPosition, int enemy)
         {
-            if (totalEnemies[enemy][0] == 0)
-            {
-                List<double> setUpEnemy = new List<double>()
+
+            List<double> setUpEnemy = new List<double>()
                 {
-                    1, 500, 0.5, 10, 5, 5, 0,  0, 0, 20, 0, 0
+                    1, 100, 0.5, 40, 5, 5, 0,  0, 0, 20, 0, 0, 30, 20, 0
                 };
 
 
-                totalEnemies[enemy] = setUpEnemy;
-
-
-                return enemyPosition += 1;
-            }
+            totalEnemies[enemy] = setUpEnemy;
 
             return enemyPosition;
 
