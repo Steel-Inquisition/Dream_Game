@@ -39,15 +39,41 @@ namespace Start_Game
             0, 100, 100, 10, 10, 10, 10, 10, 5, 10, 25, 0, 100, 100, 100, 100
         };
 
+        string enemyHitDirrection = "none";
+
         // Current Stat
         int currentStat = 0;
-
-        // Knockback
-        int knockBack = 60;
 
         // total players
         const int maxPlayers = 4;
         int playersDrawn = 0;
+
+        // Enemy Movement
+        string enemyDirrection = "";
+
+
+
+        // Movement
+
+        List<double> momentum = new List<double>()
+        {
+            //x,y
+            0, 0
+        };
+
+        List<double> speed = new List<double>()
+        {
+            //x,y
+            0, 0
+        };
+
+        List<bool> ifTouchWall = new List<bool>()
+        {
+            // up, down, left, right
+            false, false, false, false
+        };
+
+
 
         // Player list
         Dictionary<double, List<double>> totalPlayers = new Dictionary<double, List<double>>(4);
@@ -68,7 +94,7 @@ namespace Start_Game
         List<double> enemyStats = new List<double>()
         {
             // image, hp, Enemy Speed, damage, Phys Def, Mag Def, type, isRanged, drop, size, difficulty, species, knockback, is mp, is phys
-            1, 200, 0.6, 10, 5, 5, 0,  0, 0, 20, 0, 0, 30, 0, 0
+            1, 200, 0.6, 0, 5, 5, 0,  0, 0, 20, 0, 0, 0, 0, 0
         };
 
         // Create a list for items that will be removed
@@ -77,6 +103,12 @@ namespace Start_Game
 
         // Add Timer for the game -> FrameRate
         DispatcherTimer dispatcherTimer = new DispatcherTimer();
+
+
+        // add timer for the invisibilty frames
+        DispatcherTimer invisibilityFrames = new DispatcherTimer();
+
+
 
         // Map Size
         const int mapSize = 100;
@@ -113,6 +145,9 @@ namespace Start_Game
 
         // If this was created
         bool weaponCreated = false;
+
+        // Weapon
+
 
         // Constant Size
         const int objectSize = 40;
@@ -158,6 +193,7 @@ namespace Start_Game
 
         // Frames
         int frame = 0;
+        int invisbilityFrame = 0;
 
         // Sword Animation Time
         int swordAnimation = 5;
@@ -165,6 +201,9 @@ namespace Start_Game
         // Initial Dirrection
         string currentDirrection = "up";
         string oldDirrection = "up";
+
+
+        bool playerIsDamaged = false;
 
 
 
@@ -202,6 +241,8 @@ namespace Start_Game
 
         private void StartTheGame()
         {
+
+
             // ORDER OF INITIATION
             drawSetting DrawTheSetting = new drawSetting();
             basicMapMake MakingTheMap = new basicMapMake();
@@ -263,9 +304,15 @@ namespace Start_Game
             nextRoom = false;
 
 
+            ifTouchWall[0] = false;
+            ifTouchWall[1] = false;
+            ifTouchWall[2] = false;
+            ifTouchWall[3] = false;
+
+
+
 
             // SET OBJECTS UP HERE
-
 
 
             // Player Movement!
@@ -305,10 +352,17 @@ namespace Start_Game
             MakingTheObjects.highlightCurrentPlayer(totalPlayers, playerPosition, Player1Name, Player2Name, Player3Name, Player4Name);
 
 
+
             // RUN THINGS HERE
 
-            // Set bars to player stats
-            DrawTheStats.setBarToCurrentStats(PlayerHealth1, PlayerHealth2, PlayerHealth3, PlayerHealth4, totalPlayers, playerPosition, mpBar1, mpBar2, mpBar3, mpBar4);
+            // list knockbak
+            List<double> knockback = new List<double>()
+            {
+                //x,y
+                0, 0
+            };
+
+
 
 
             // Making Things
@@ -322,8 +376,68 @@ namespace Start_Game
                 playerPosition = 0;
             }
 
+
+            speed[0] = totalPlayers[playerPosition][8];
+            speed[1] = totalPlayers[playerPosition][8];
+
+
+
+            // Run enemy
+
+            // run if enemy touch
+
+
+
+            enemyDirrection = CheckingForInterations.checkingEnemy(PlayerSpace, IfInteract, PlayerCharacter, enemyStats, PlayerHitbox, itemstoremove, dispatcherTimer, logBox, totalPlayers, playerPosition, totalEnemies, enemyPosition, DealDamage, totalWeapon, enemyId, DamageDeltBlock, EnemyHealth, oldDirrection, playerDirrection, playerIsDamaged, momentum, currentDirrection, enemyDirrection);
+
+
+            CheckingForInterations.checkingEnemyDamage(PlayerSpace, enemyId, PlayerHitbox, playerIsDamaged, PlayerCharacter, playerDirrection, totalEnemies, totalPlayers, playerPosition, DealDamage);
+
+
+            CheckingForInterations.checkingSwordDamage(PlayerSpace, enemyId, playerDirrection, totalEnemies, totalPlayers, playerPosition, itemstoremove, totalWeapon, logBox, DamageDeltBlock, EnemyHealth, oldDirrection, DealDamage, enemyPosition);
+
+
+
+
             // Run the Player Movement!
+
+
+
+
+            speed = MoveThePlayer.dirrectionCounter(totalPlayers, PlayerCharacter, objectSize, playerDirrection, playerIsInRoom, nextRoom, currentDirrection, playerPosition, speed);
+
+            ifTouchWall = CheckingForInterations.checkingWall(PlayerSpace, IfInteract, PlayerHitbox, currentDirrection, playerDirrection, PlayerCharacter, totalPlayers, playerPosition, enemyHitDirrection, logBox, momentum, speed, ifTouchWall);
+
+            MoveThePlayer.speedCheckerX(totalPlayers, PlayerCharacter, objectSize, playerDirrection, playerIsInRoom, nextRoom, currentDirrection, playerPosition, momentum, speed, ifTouchWall);
+            MoveThePlayer.speedCheckerY(totalPlayers, PlayerCharacter, objectSize, playerDirrection, playerIsInRoom, nextRoom, currentDirrection, playerPosition, momentum, speed, ifTouchWall);
+
             currentDirrection = MoveThePlayer.movementChecker(totalPlayers, PlayerCharacter, objectSize, playerDirrection, playerIsInRoom, nextRoom, currentDirrection, playerPosition);
+
+
+            momentum[0] = MoveThePlayer.addMomentumX(momentum, playerDirrection, currentDirrection, PlayerCharacter);
+            momentum[1] = MoveThePlayer.addMomentumY(momentum, playerDirrection, currentDirrection, PlayerCharacter);
+
+
+
+
+
+
+
+
+
+
+            // end of player movement
+
+
+            // If player or sword toucches enenmy
+
+
+
+
+
+
+
+
 
             // Get the Next Room
             nextRoom = MoveThePlayer.goNextRoom(PlayerCharacter, objectSize, nextRoom, PlayerSpace, leftRect, rightRect, upRect, downRect, PlayerHitbox);
@@ -346,12 +460,19 @@ namespace Start_Game
 
             // Actually Running The Interactions
 
-            CheckingForInterations.checkingWall(PlayerSpace, IfInteract, PlayerHitbox, currentDirrection, playerDirrection, PlayerCharacter, totalPlayers, playerPosition);
+
             CheckingForInterations.checkingItem(PlayerSpace, IfInteract, PlayerHitbox, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize);
+
+
+
 
             weaponCreated = CheckingForInterations.checkingWeapon(PlayerSpace, IfInteract, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition);
 
-            CheckingForInterations.checkingEnemy(PlayerSpace, IfInteract, PlayerCharacter, enemyStats, PlayerHitbox, itemstoremove, dispatcherTimer, logBox, totalPlayers, playerPosition, totalEnemies, enemyPosition, DealDamage, totalWeapon, enemyId, DamageDeltBlock, EnemyHealth, oldDirrection, playerDirrection, knockBack);
+
+
+
+
+
 
 
 
@@ -380,6 +501,7 @@ namespace Start_Game
                         itemstoremove.Add(x);
                     }
 
+
                 }
 
                 DrawTheSetting.makeSurrondings(currentRoom, map, playerIsInRoom, MakingTheObjects, PlayerSpace, objectSize, logBox, scroll, totalMap, totalEnemies, enemyPosition, SetUpTheEnemy, enemyId);
@@ -392,7 +514,30 @@ namespace Start_Game
                 totalPlayers[playerPosition][2] += 1;
             }
 
+
+
+
+            // Set bars to player stats
+            DrawTheStats.setBarToCurrentStats(PlayerHealth1, PlayerHealth2, PlayerHealth3, PlayerHealth4, totalPlayers, playerPosition, mpBar1, mpBar2, mpBar3, mpBar4);
+
+
+
+            playerIsDamaged = DealDamage.invisibilityFrames(PlayerSpace, PlayerHitbox, enemyId, currentDirrection, PlayerCharacter, knockback, enemyDirrection, playerIsDamaged);
+
+            if (playerIsDamaged == true)
+            {
+                invisbilityFrame++;
+
+                if (invisbilityFrame > 50)
+                {
+                    invisbilityFrame = 0;
+                    playerIsDamaged = false;
+                }
+            }
         }
+
+
+
 
         private void EndGame()
         {
@@ -809,7 +954,7 @@ namespace Start_Game
     class checkForInteraction
     {
         // Check for Walls
-        public void checkingWall(Canvas PlayerSpace, typeInteractionChecker IfInteract, Rect PlayerHitbox, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, Dictionary<double, List<double>> totalPlayers, int playerPosition)
+        public List<bool> checkingWall(Canvas PlayerSpace, typeInteractionChecker IfInteract, Rect PlayerHitbox, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, Dictionary<double, List<double>> totalPlayers, int playerPosition, string enemyHitDirrection, TextBlock logBox, List<double> momentum, List<double> speed, List<bool> ifTouchWall)
         {
 
             // Checking for Walls
@@ -819,11 +964,14 @@ namespace Start_Game
                 if (x is Rectangle && (string)x.Tag == "wall")
                 {
                     Rect wall = new Rect(Canvas.GetLeft(x), Canvas.GetTop(x), x.Width, x.Height);
-                    IfInteract.wallInteract(PlayerHitbox, wall, currentDirrection, playerDirrection, PlayerCharacter, totalPlayers, playerPosition);
+                    ifTouchWall = IfInteract.wallInteract(PlayerHitbox, wall, currentDirrection, playerDirrection, PlayerCharacter, totalPlayers, playerPosition, enemyHitDirrection, logBox, momentum, speed, ifTouchWall);
 
                 }
 
             }
+
+
+            return ifTouchWall;
 
 
         }
@@ -893,7 +1041,7 @@ namespace Start_Game
 
         }
 
-        public void checkingEnemy(Canvas PlayerSpace, typeInteractionChecker IfInteract, Rectangle PlayerCharacter, List<double> enemyStats, Rect PlayerHitbox, List<Rectangle> itemstoremove, DispatcherTimer dispatcherTimer, TextBlock logBox, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalEnemies, int enemyPosition, combat DealDamage, Dictionary<double, List<double>> totalWeapon, List<int> enemyId, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, string oldDirrection, List<string> playerDirrection, int knockBack)
+        public string checkingEnemy(Canvas PlayerSpace, typeInteractionChecker IfInteract, Rectangle PlayerCharacter, List<double> enemyStats, Rect PlayerHitbox, List<Rectangle> itemstoremove, DispatcherTimer dispatcherTimer, TextBlock logBox, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalEnemies, int enemyPosition, combat DealDamage, Dictionary<double, List<double>> totalWeapon, List<int> enemyId, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, string oldDirrection, List<string> playerDirrection, bool playerIsDamaged, List<double> momentum, string currentDirrection, string enemyDirrection)
         {
             // Checking for enemy
             foreach (var y in PlayerSpace.Children.OfType<Rectangle>())
@@ -904,7 +1052,81 @@ namespace Start_Game
                     {
                         Rect enemy = new Rect(Canvas.GetLeft(y), Canvas.GetTop(y), y.Width, y.Height);
 
-                        IfInteract.enemyInteract(y, PlayerCharacter, enemyStats, PlayerHitbox, enemy, itemstoremove, dispatcherTimer, logBox, PlayerSpace, totalPlayers, playerPosition, totalEnemies, enemyPosition, DealDamage, totalWeapon, i, DamageDeltBlock, EnemyHealth, oldDirrection, playerDirrection, knockBack);
+                        enemyDirrection = currentDirrection = IfInteract.enemyMove(y, PlayerCharacter, enemyStats, PlayerHitbox, enemy, itemstoremove, dispatcherTimer, logBox, PlayerSpace, totalPlayers, playerPosition, totalEnemies, enemyPosition, DealDamage, totalWeapon, i, DamageDeltBlock, EnemyHealth, oldDirrection, playerDirrection, playerIsDamaged, momentum, enemyDirrection);
+
+
+                    }
+                }
+
+            }
+
+
+            return enemyDirrection;
+        }
+
+
+
+
+        // how much damage the enemy does
+        public void checkingSwordDamage(Canvas PlayerSpace, List<int> enemyId, List<string> playerDirrection, Dictionary<double, List<double>> totalEnemies, Dictionary<double, List<double>> totalPlayers, int playerPosition, List<Rectangle> itemstoremove, Dictionary<double, List<double>> totalWeapon, TextBlock logBox, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, string oldDirrection, combat DealDamage, int enemyPosition)
+        {
+            foreach (var y in PlayerSpace.Children.OfType<Rectangle>())
+            {
+                for (int i = 0; i < enemyId.Count; i++)
+                {
+                    if (y is Rectangle && (string)y.Tag == $"enemy{i}")
+                    {
+                        Rect enemy = new Rect(Canvas.GetLeft(y), Canvas.GetTop(y), y.Width, y.Height);
+
+
+                        foreach (var z in PlayerSpace.Children.OfType<Rectangle>())
+                        {
+
+
+                            if (z is Rectangle && (string)z.Tag == "weapon-sword-phys")
+                            {
+                                Rect sword = new Rect(Canvas.GetLeft(z), Canvas.GetTop(z), z.Width, z.Height);
+
+                                if (enemy.IntersectsWith(sword))
+                                {
+
+                                    DealDamage.playerAttackEnemy(PlayerSpace, totalWeapon, totalPlayers, playerPosition, totalEnemies, enemyPosition, oldDirrection, playerDirrection, i, y, DamageDeltBlock, EnemyHealth, itemstoremove);
+
+
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+
+
+
+
+
+        // how much damage the enemy does
+        public void checkingEnemyDamage(Canvas PlayerSpace, List<int> enemyId, Rect PlayerHitbox, bool playerIsDamaged, Rectangle PlayerCharacter, List<string> playerDirrection, Dictionary<double, List<double>> totalEnemies, Dictionary<double, List<double>> totalPlayers, int  playerPosition, combat DealDamage)
+        {
+            foreach(var y in PlayerSpace.Children.OfType<Rectangle>())
+            {
+                for (int i = 0; i < enemyId.Count; i++)
+                {
+                    if (y is Rectangle && (string)y.Tag == $"enemy{i}")
+                    {
+                        Rect enemy = new Rect(Canvas.GetLeft(y), Canvas.GetTop(y), y.Width, y.Height);
+
+                        // See if the player is interacting with the enemy
+
+                        // hit box
+                        if (PlayerHitbox.IntersectsWith(enemy) && playerIsDamaged == false)
+                        {
+                            DealDamage.enemyAttackPlayer(playerDirrection, PlayerCharacter, totalEnemies, i, totalPlayers, playerPosition, y, PlayerHitbox, PlayerSpace);
+                        }
 
 
                     }
@@ -919,37 +1141,69 @@ namespace Start_Game
 
     class typeInteractionChecker
     {
-        public void wallInteract(Rect PlayerHitbox, Rect wall, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, Dictionary<double, List<double>> totalPlayers, int playerPosition)
+        public List<bool> wallInteract(Rect PlayerHitbox, Rect wall, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, Dictionary<double, List<double>> totalPlayers, int playerPosition, string enemyHitDirrection, TextBlock logBox, List<double> momentum, List<double> speed, List<bool> ifTouchWall)
         {
-            // if the player hit box and the enemy is colliding 
-            if (PlayerHitbox.IntersectsWith(wall))
+
+            if (currentDirrection == "up")
             {
 
-                // HITBOXES AND STOP FROM GOING INTO WALLS!!!
+
+                // Check if it hits the above box and stop player from entering it by speed and momentum of player
+                Rect upBox = new Rect(Canvas.GetLeft(PlayerCharacter), Canvas.GetTop(PlayerCharacter) - Math.Abs(speed[1]) - Math.Abs(momentum[1]), PlayerHitbox.Width, PlayerHitbox.Height);
 
 
-                if (currentDirrection == playerDirrection[0]) // if going up, push down at the same speed
+                if ((upBox).IntersectsWith(wall))
                 {
-                    Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + totalPlayers[playerPosition][8]);
-                }
-                else if (currentDirrection == playerDirrection[1]) // if going down, push up, push up at the same speed
-                {
-                    Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) - totalPlayers[playerPosition][8]);
-                }
-                else if (currentDirrection == playerDirrection[2]) // if going left, push right, push right at the same speed
-                {
-                    Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + totalPlayers[playerPosition][8]);
-                }
-                else if (currentDirrection == playerDirrection[3]) // if going right, push left, push left at the same speed
-                {
-                    Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - totalPlayers[playerPosition][8]);
+                    ifTouchWall[0] = true;
                 }
 
-
-
-
-
+                //Canvas.SetTop(PlayerCharacter, wall.Bottom + 10);
             }
+            else if (currentDirrection == "down")
+            {
+                Rect downBox = new Rect(Canvas.GetLeft(PlayerCharacter), Canvas.GetTop(PlayerCharacter), PlayerHitbox.Width, PlayerHitbox.Height + Math.Abs(speed[1]) + Math.Abs(momentum[1]));
+
+
+                if ((downBox).IntersectsWith(wall))
+                {
+                    ifTouchWall[1] = true;
+                }
+            }
+            else if (currentDirrection == "left")
+            {
+                Rect leftBox = new Rect(Canvas.GetLeft(PlayerCharacter) - Math.Abs(speed[0]) - Math.Abs(momentum[0]), Canvas.GetTop(PlayerCharacter), PlayerHitbox.Width, PlayerHitbox.Height);
+
+
+                if ((leftBox).IntersectsWith(wall))
+                {
+                    ifTouchWall[2] = true;
+                }
+            }
+            else if (currentDirrection == "right")
+            {
+                Rect rightBox = new Rect(Canvas.GetLeft(PlayerCharacter), Canvas.GetTop(PlayerCharacter), PlayerHitbox.Width + Math.Abs(speed[0]) + Math.Abs(+momentum[0]), PlayerHitbox.Height);
+
+
+                if ((rightBox).IntersectsWith(wall))
+                {
+                    ifTouchWall[3] = true;
+                }
+            }
+
+
+
+
+            return ifTouchWall;
+
+            /*
+            List<bool> ifTouchWall = new List<bool>()
+        {
+            // up, down, left, right
+            false, false, false, false
+        };
+            */
+
+
         }
 
         public void coinInteract(Rectangle c, Rect PlayerHitbox, Rect coin, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize)
@@ -1046,8 +1300,7 @@ namespace Start_Game
 
         }
 
-
-        public void enemyInteract(Rectangle y, Rectangle PlayerCharacter, List<double> enemyStats, Rect PlayerHitbox, Rect enemy, List<Rectangle> itemstoremove, DispatcherTimer dispatcherTimer, TextBlock logBox, Canvas PlayerSpace, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalEnemies, int enemyPosition, combat DealDamage, Dictionary<double, List<double>> totalWeapon, int i, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, string oldDirrection, List<string> playerDirrection, int knockBack)
+        public string enemyMove(Rectangle y, Rectangle PlayerCharacter, List<double> enemyStats, Rect PlayerHitbox, Rect enemy, List<Rectangle> itemstoremove, DispatcherTimer dispatcherTimer, TextBlock logBox, Canvas PlayerSpace, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalEnemies, int enemyPosition, combat DealDamage, Dictionary<double, List<double>> totalWeapon, int i, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, string oldDirrection, List<string> playerDirrection, bool playerIsDamaged, List<double> momentum, string enemyDirrection)
         {
             // See if the player is interacting with the enemy
 
@@ -1057,54 +1310,34 @@ namespace Start_Game
             {
                 Canvas.SetTop(y, Canvas.GetTop(y) - enemyStats[2]);
 
+                enemyDirrection = "up";
+
             }
-            else if (Canvas.GetTop(PlayerCharacter) > Canvas.GetTop(y))
+            if (Canvas.GetTop(PlayerCharacter) > Canvas.GetTop(y))
             {
                 Canvas.SetTop(y, Canvas.GetTop(y) + enemyStats[2]);
+
+                enemyDirrection = "down";
             }
 
             if (Canvas.GetLeft(PlayerCharacter) < Canvas.GetLeft(y))
             {
                 Canvas.SetLeft(y, Canvas.GetLeft(y) - enemyStats[2]);
+
+                enemyDirrection = "left";
             }
-            else if (Canvas.GetLeft(PlayerCharacter) > Canvas.GetTop(y))
+            if (Canvas.GetLeft(PlayerCharacter) > Canvas.GetTop(y))
             {
                 Canvas.SetLeft(y, Canvas.GetLeft(y) + enemyStats[2]);
+
+                enemyDirrection = "right";
             }
 
 
-
-
-
-            // hit box
-            if (PlayerHitbox.IntersectsWith(enemy))
-            {
-
-                DealDamage.enemyAttackPlayer(playerDirrection, PlayerCharacter, totalEnemies, i, totalPlayers, playerPosition);
-            }
-
-
-            foreach (var z in PlayerSpace.Children.OfType<Rectangle>())
-            {
-
-
-                if (z is Rectangle && (string)z.Tag == "weapon-sword-phys")
-                {
-                    Rect sword = new Rect(Canvas.GetLeft(z), Canvas.GetTop(z), z.Width, z.Height);
-
-                    if (enemy.IntersectsWith(sword))
-                    {
-
-                        DealDamage.playerAttackEnemy(totalEnemies, enemyPosition, itemstoremove, y, playerPosition, totalWeapon, totalPlayers, i, logBox, DamageDeltBlock, EnemyHealth, oldDirrection, playerDirrection, knockBack);
-
-
-                    }
-                }
-
-            }
-
+            return enemyDirrection;
 
         }
+
 
         public void removeAll(List<Rectangle> itemstoremove, Rectangle x, Rectangle y, Rectangle c)
         {
@@ -1120,7 +1353,7 @@ namespace Start_Game
 
     class combat
     {
-        public void playerAttackEnemy(Dictionary<double, List<double>> totalEnemies, int enemyPosition, List<Rectangle> itemstoremove, Rectangle y, int playerPosition, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int i, TextBlock logBox, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, string oldDirrection, List<string> playerDirrection, int knockBack)
+        public void playerAttackEnemy(Canvas PlayerSpace, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalEnemies, int enemyPosition, string oldDirrection, List<string> playerDirrection, int i, Rectangle y, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, List<Rectangle> itemstoremove)
         {
 
             // Deal Damage to enemy based on weapon
@@ -1186,10 +1419,11 @@ namespace Start_Game
             // totalPlayers[playerPosition][1]
         }
 
-        public void enemyAttackPlayer(List<string> playerDirrection, Rectangle PlayerCharacter, Dictionary<double, List<double>> totalEnemies, int i, Dictionary<double, List<double>> totalPlayers, int playerPosition)
+        public void enemyAttackPlayer(List<string> playerDirrection, Rectangle PlayerCharacter, Dictionary<double, List<double>> totalEnemies, int i, Dictionary<double, List<double>> totalPlayers, int playerPosition, Rectangle y, Rect PlayerHitbox, Canvas PlayerSpace)
         {
 
             double damage = totalEnemies[i][3];
+
 
             if (totalEnemies[i][6] == 0) // phys
             {
@@ -1205,28 +1439,34 @@ namespace Start_Game
             }
 
 
-            if (playerDirrection[0] == "up") //up
-            {
-                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) - totalEnemies[i][12]);
-
-            }
-            else if (playerDirrection[1] == "down") //down
-            {
-
-                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + totalEnemies[i][12]);
-
-            }
-
-            if (playerDirrection[2] == "left") // left
-            {
-                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - totalEnemies[i][12]);
-            }
-            else if (playerDirrection[3] == "right") // right
-            {
-                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + totalEnemies[i][12]);
-            }
-
             totalPlayers[playerPosition][1] -= damage; // replace this later please
+
+        }
+
+        public bool invisibilityFrames(Canvas PlayerSpace, Rect PlayerHitbox, List<int> enemyId, string currentDirrection, Rectangle PlayerCharacter, List<double> knockback, string enemyDirrection, bool playerIsDamaged)
+        {
+            foreach (var y in PlayerSpace.Children.OfType<Rectangle>())
+            {
+
+                for (int i = 0; i < enemyId.Count; i++)
+                {
+                    if (y is Rectangle && (string)y.Tag == $"enemy{i}")
+                    {
+                        Rect enemy = new Rect(Canvas.GetLeft(y), Canvas.GetTop(y), y.Width, y.Height);
+
+                        if (PlayerHitbox.IntersectsWith(enemy))
+                        {
+                            playerIsDamaged = true;
+                        }
+
+                    }
+                }
+
+            }
+
+
+
+            return playerIsDamaged;
 
         }
 
@@ -1301,6 +1541,127 @@ namespace Start_Game
 
             return playerPosition;
         }
+
+        public double addMomentumX(List<double> momentum, List<string> playerDirrection, string currentDirrection, Rectangle PlayerCharacter)
+        {
+            if (currentDirrection == playerDirrection[2]) // left
+            {
+                momentum[0] -= 0.2;
+            }
+            else if (currentDirrection == playerDirrection[3]) // right
+            {
+                momentum[0] += 0.2;
+            }
+            else
+            {
+                momentum[0] *= 0.8;
+            }
+
+
+
+
+            return momentum[0];
+        }
+
+        public double addMomentumY(List<double> momentum, List<string> playerDirrection, string currentDirrection, Rectangle PlayerCharacter)
+        {
+
+            if (currentDirrection == playerDirrection[0]) // up
+            {
+                momentum[1] -= 0.2;
+            }
+            else if (currentDirrection == playerDirrection[1]) // down
+            {
+                momentum[1] += 0.2;
+            }
+            else
+            {
+                momentum[1] *= 0.8;
+            }
+
+
+
+            return momentum[1];
+        }
+
+
+        // up, down, left, right
+
+
+
+        public double speedCheckerX(Dictionary<double, List<double>> totalPlayers, Rectangle PlayerCharacter, int objectSize, List<string> playerDirrection, int playerIsInRoom, bool nextRoom, string currentDirrection, int playerPosition, List<double> momentum, List<double> speed, List<bool> ifTouchWall)
+        {
+            // GOING LEFT
+            if (Keyboard.IsKeyDown(Key.Left) && Keyboard.IsKeyDown(Key.Up) == false && Keyboard.IsKeyDown(Key.Down) == false && ifTouchWall[2] == false) // If left key is presssed, and if the key is 5 away from the border
+            {
+
+
+                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + speed[0]); // get the object we want to move then the X value (Set Left). Since we are going left we are going to subteract that X value by how fast the player is moving
+
+                if (Math.Abs(momentum[0]) > 0.9)
+                {
+                    Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + momentum[0]);
+                }
+
+                return speed[0];
+            }
+
+            // GOING RIGHT
+
+            if (Keyboard.IsKeyDown(Key.Right) && Keyboard.IsKeyDown(Key.Up) == false && Keyboard.IsKeyDown(Key.Down) == false && ifTouchWall[3] == false) // basically get playter character and it's current width, comparing it to the border which uses the current mainwindow width
+            {
+                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + speed[0]);
+
+                if (Math.Abs(momentum[0]) > 0.9)
+                {
+                    Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + momentum[0]);
+                }
+
+                return speed[0];
+
+            }
+
+            return speed[0];
+        }
+
+        public double speedCheckerY(Dictionary<double, List<double>> totalPlayers, Rectangle PlayerCharacter, int objectSize, List<string> playerDirrection, int playerIsInRoom, bool nextRoom, string currentDirrection, int playerPosition, List<double> momentum, List<double> speed, List<bool> ifTouchWall)
+        {
+
+
+            // GOING UP
+            if (Keyboard.IsKeyDown(Key.Up) && Keyboard.IsKeyDown(Key.Left) == false && Keyboard.IsKeyDown(Key.Right) == false && ifTouchWall[0] == false) // if up key is pressed and is 5 away from the top
+            {
+                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + speed[1]);
+
+                if (Math.Abs(momentum[1]) > 0.9)
+                {
+                    Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + momentum[1]);
+                }
+
+                return speed[1];
+
+            }
+
+
+
+            // GOING DOWN
+            if (Keyboard.IsKeyDown(Key.Down) && Keyboard.IsKeyDown(Key.Left) == false && Keyboard.IsKeyDown(Key.Right) == false && ifTouchWall[1] == false) // if down key is pressed and if the location of the player character + it's height is away from the bottom
+            {
+                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + speed[1]);
+
+                if (Math.Abs(momentum[1]) > 0.9)
+                {
+                    Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + momentum[1]);
+                }
+
+                return speed[1];
+
+            }
+
+            return speed[1];
+        }
+
+
         public string movementChecker(Dictionary<double, List<double>> totalPlayers, Rectangle PlayerCharacter, int objectSize, List<string> playerDirrection, int playerIsInRoom, bool nextRoom, string currentDirrection, int playerPosition)
         {
             // Player Movement!
@@ -1314,9 +1675,8 @@ namespace Start_Game
 
 
             // GOING LEFT
-            if (Keyboard.IsKeyDown(Key.Left)) // If left key is presssed, and if the key is 5 away from the border
+            if (Keyboard.IsKeyDown(Key.Left) && Keyboard.IsKeyDown(Key.Up) == false && Keyboard.IsKeyDown(Key.Down) == false) // If left key is presssed, and if the key is 5 away from the border
             {
-                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - speed); // get the object we want to move then the X value (Set Left). Since we are going left we are going to subteract that X value by how fast the player is moving
 
                 return playerDirrection[2];
 
@@ -1324,9 +1684,8 @@ namespace Start_Game
 
 
             // GOING UP
-            if (Keyboard.IsKeyDown(Key.Up)) // if up key is pressed and is 5 away from the top
+            if (Keyboard.IsKeyDown(Key.Up) && Keyboard.IsKeyDown(Key.Left) == false && Keyboard.IsKeyDown(Key.Right) == false) // if up key is pressed and is 5 away from the top
             {
-                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) - speed);
 
                 return playerDirrection[0];
 
@@ -1335,9 +1694,8 @@ namespace Start_Game
 
 
             // GOING DOWN
-            if (Keyboard.IsKeyDown(Key.Down)) // if down key is pressed and if the location of the player character + it's height is away from the bottom
+            if (Keyboard.IsKeyDown(Key.Down) && Keyboard.IsKeyDown(Key.Left) == false && Keyboard.IsKeyDown(Key.Right) == false) // if down key is pressed and if the location of the player character + it's height is away from the bottom
             {
-                Canvas.SetTop(PlayerCharacter, Canvas.GetTop(PlayerCharacter) + speed);
 
                 return playerDirrection[1];
 
@@ -1347,10 +1705,8 @@ namespace Start_Game
 
             // GOING RIGHT
 
-            if (Keyboard.IsKeyDown(Key.Right)) // basically get playter character and it's current width, comparing it to the border which uses the current mainwindow width
+            if (Keyboard.IsKeyDown(Key.Right) && Keyboard.IsKeyDown(Key.Up) == false && Keyboard.IsKeyDown(Key.Down) == false) // basically get playter character and it's current width, comparing it to the border which uses the current mainwindow width
             {
-                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) + speed);
-
                 return playerDirrection[3];
 
             }
@@ -1358,6 +1714,52 @@ namespace Start_Game
 
             return "nothing";
         }
+
+        public List<double> dirrectionCounter(Dictionary<double, List<double>> totalPlayers, Rectangle PlayerCharacter, int objectSize, List<string> playerDirrection, int playerIsInRoom, bool nextRoom, string currentDirrection, int playerPosition, List<double> speed)
+        {
+
+            // GOING LEFT
+            if (Keyboard.IsKeyDown(Key.Left) && Keyboard.IsKeyDown(Key.Up) == false && Keyboard.IsKeyDown(Key.Down) == false) // If left key is presssed, and if the key is 5 away from the border
+            {
+
+                speed[0] = -speed[0];
+
+            }
+
+
+            // GOING UP
+            if (Keyboard.IsKeyDown(Key.Up) && Keyboard.IsKeyDown(Key.Left) == false && Keyboard.IsKeyDown(Key.Right) == false) // if up key is pressed and is 5 away from the top
+            {
+
+                speed[1] = -speed[1];
+
+            }
+
+
+
+            // GOING DOWN
+            if (Keyboard.IsKeyDown(Key.Down) && Keyboard.IsKeyDown(Key.Left) == false && Keyboard.IsKeyDown(Key.Right) == false) // if down key is pressed and if the location of the player character + it's height is away from the bottom
+            {
+
+                speed[1] = speed[1];
+
+            }
+
+
+
+            // GOING RIGHT
+
+            if (Keyboard.IsKeyDown(Key.Right) && Keyboard.IsKeyDown(Key.Up) == false && Keyboard.IsKeyDown(Key.Down) == false) // basically get playter character and it's current width, comparing it to the border which uses the current mainwindow width
+            {
+                speed[0] = speed[0];
+
+            }
+
+
+            return speed;
+        }
+
+
 
         public bool goNextRoom(Rectangle PlayerCharacter, int objectSize, bool nextRoom, Canvas PlayerSpace, Rect leftRect, Rect rightRect, Rect upRect, Rect downRect, Rect PlayerHitbox)
         {
@@ -1398,7 +1800,7 @@ namespace Start_Game
             }
             else if (PlayerHitbox.IntersectsWith(rightRect)) // If touch the border, right
             {
-                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - 350);
+                Canvas.SetLeft(PlayerCharacter, Canvas.GetLeft(PlayerCharacter) - 300);
 
                 return +1;
             }
@@ -1695,6 +2097,8 @@ namespace Start_Game
                 Fill = Image
             };
 
+            newImage.Stroke = Brushes.Black;
+
             Canvas.SetLeft(newImage, (row * objectSize));
             Canvas.SetTop(newImage, (col * objectSize));
 
@@ -1883,7 +2287,7 @@ namespace Start_Game
 
             List<double> setUpEnemy = new List<double>()
                 {
-                    1, 100, 0.5, 40, 5, 5, 0,  0, 0, 20, 0, 0, 30, 20, 0
+                    1, 100, 0.5, 0, 5, 5, 0,  0, 0, 20, 0, 0, 0, 50, 0
                 };
 
 

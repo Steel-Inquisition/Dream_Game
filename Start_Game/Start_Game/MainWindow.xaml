@@ -75,7 +75,7 @@
         </ScrollViewer>
 
 
-        <Rectangle x:Name="PlayerCharacter" Tag="player" Width="25" Height="25" Fill="Blue" Stroke="Red" Canvas.Top="200" Canvas.Left="200" StrokeThickness="3"  />
+        <Rectangle x:Name="PlayerCharacter" Tag="player" Width="25" Height="25" Fill="Blue" Stroke="Red" Canvas.Top="200" Canvas.Left="220" StrokeThickness="3"  />
 
 
         <!-- Title Screen-->
