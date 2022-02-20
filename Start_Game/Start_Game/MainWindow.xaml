@@ -43,7 +43,10 @@
         <Rectangle Tag="background" Canvas.Left="460" Width="240" Height="400" Stroke="Black"/>
 
         <!-- Inventory Space -->
-        <TextBlock Tag="background" Name="Inventory" Canvas.Left="460" Width="240" Height="276" Text="" Canvas.Top="124" FontSize="7" TextWrapping="WrapWithOverflow"/>
+        <TextBlock Tag="background" Name="Inventory" Canvas.Left="460" Width="240" Height="165" Text="" Canvas.Top="124" FontSize="7" TextWrapping="WrapWithOverflow"/>
+
+        <TextBlock Tag="background" Name="InventoryBottom" Canvas.Left="460" Width="240" Height="165" Text="" Canvas.Top="248" FontSize="7" TextWrapping="WrapWithOverflow"/>
+
 
 
         <!-- Health Bar -->

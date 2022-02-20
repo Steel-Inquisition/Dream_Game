@@ -39,6 +39,13 @@ namespace Start_Game
             0, 100, 100, 10, 10, 10, 10, 10, 5, 10, 25, 0, 100, 100, 100, 100
         };
 
+        List<double> partyStats = new List<double>()
+        {
+            // coins, ammo, holy cross, key, bomb
+            0, 20, 3, 0, 0
+
+        };
+
         string enemyHitDirrection = "none";
 
         // Current Stat
@@ -394,6 +401,7 @@ namespace Start_Game
             CheckingForInterations.checkingEnemyDamage(PlayerSpace, enemyId, PlayerHitbox, playerIsDamaged, PlayerCharacter, playerDirrection, totalEnemies, totalPlayers, playerPosition, DealDamage);
 
 
+            // If Enemy Colides With Sword
             CheckingForInterations.checkingSwordDamage(PlayerSpace, enemyId, playerDirrection, totalEnemies, totalPlayers, playerPosition, itemstoremove, totalWeapon, logBox, DamageDeltBlock, EnemyHealth, oldDirrection, DealDamage, enemyPosition);
 
 
@@ -448,9 +456,20 @@ namespace Start_Game
             // Old dirrection
             oldDirrection = MakingTheAttack.facing(currentDirrection, oldDirrection, currentDirrection, weaponCreated);
 
-            // Weapon Create
-            weaponCreated = MakingTheAttack.swordAttack(weaponCreated, currentDirrection, playerDirrection, PlayerSpace, totalWeapon, totalPlayers, playerPosition);
 
+
+
+            // if press button, create a weapon
+            weaponCreated = MakingTheAttack.swordAttack(weaponCreated, currentDirrection, playerDirrection, PlayerSpace, totalWeapon, totalPlayers, playerPosition, PlayerCharacter, partyStats);
+
+
+
+            // if attack is ranged
+
+
+
+            // Get what weapon is created and setting what dirrection the sword is at
+            weaponCreated = CheckingForInterations.checkingWeapon(PlayerSpace, IfInteract, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition, leftRect, rightRect, upRect, downRect);
 
             // if swrd animaion is activating
             frame = MakingAnimation.swordAnimationLength(weaponCreated, frame);
@@ -461,12 +480,11 @@ namespace Start_Game
             // Actually Running The Interactions
 
 
-            CheckingForInterations.checkingItem(PlayerSpace, IfInteract, PlayerHitbox, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize);
+            CheckingForInterations.checkingItem(PlayerSpace, IfInteract, PlayerHitbox, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats);
 
 
 
-
-            weaponCreated = CheckingForInterations.checkingWeapon(PlayerSpace, IfInteract, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition);
+  
 
 
 
@@ -519,6 +537,11 @@ namespace Start_Game
 
             // Set bars to player stats
             DrawTheStats.setBarToCurrentStats(PlayerHealth1, PlayerHealth2, PlayerHealth3, PlayerHealth4, totalPlayers, playerPosition, mpBar1, mpBar2, mpBar3, mpBar4);
+
+            // set inventory to current stats
+            DrawTheStats.setInventoryToStats(InventoryBottom, partyStats);
+
+
 
 
 
@@ -808,6 +831,14 @@ namespace Start_Game
         }
 
 
+        public void setInventoryToStats(TextBlock InventoryBottom, List<double> partyStats)
+        {
+            InventoryBottom.Text = $"Coins: {partyStats[0]} \n Ammo: {partyStats[1]} \n Holy Cross: {partyStats[2]} \n Key: {partyStats[3]} \n Bomb: {partyStats[4]}";
+        }
+
+
+
+
         public int addPlayer(List<double> playerStats, ComboBox classSelect, showStats DrawTheStats, Dictionary<double, List<double>> totalPlayers, int currentStat, TextBlock Player1Name, TextBlock Player2Name, TextBlock Player3Name, TextBlock Player4Name, TextBox GetName, Dictionary<double, List<double>> totalWeapon, TextBlock CurrentPlayersBlock, addWeapon AddingANewWeapon, int countWeapons, bool makingAllWeapons)
         {
             playerStats = new List<double> { 0, 100, 100, 10, 10, 10, 10, 10, 5, 0, 25, 0, 100, 100 };
@@ -976,7 +1007,7 @@ namespace Start_Game
 
         }
 
-        public void checkingItem(Canvas PlayerSpace, typeInteractionChecker IfInteract, Rect PlayerHitbox, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize)
+        public void checkingItem(Canvas PlayerSpace, typeInteractionChecker IfInteract, Rect PlayerHitbox, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize, List<double> partyStats)
         {
 
             // Checking for items
@@ -986,14 +1017,14 @@ namespace Start_Game
                 if (c is Rectangle && (string)c.Tag == "coin")
                 {
                     Rect coin = new Rect(Canvas.GetLeft(c), Canvas.GetTop(c), c.Width, c.Height);
-                    IfInteract.coinInteract(c, PlayerHitbox, coin, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize);
+                    IfInteract.coinInteract(c, PlayerHitbox, coin, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats);
                 }
 
             }
 
         }
 
-        public bool checkingWeapon(Canvas PlayerSpace, typeInteractionChecker IfInteract, bool weaponCreated, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, animationMaker MakingAnimation, int frame, int swordAnimation, List<Rectangle> itemstoremove, string oldDirrection, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition)
+        public bool checkingWeapon(Canvas PlayerSpace, typeInteractionChecker IfInteract, bool weaponCreated, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, animationMaker MakingAnimation, int frame, int swordAnimation, List<Rectangle> itemstoremove, string oldDirrection, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition, Rect leftRect, Rect rightRect, Rect upRect, Rect downRect)
         {
             // Checking for Weapon
             foreach (var z in PlayerSpace.Children.OfType<Rectangle>())
@@ -1003,34 +1034,14 @@ namespace Start_Game
                 {
                     Rect sword = new Rect(Canvas.GetLeft(z), Canvas.GetTop(z), z.Width, z.Height);
 
-                    // if weapon is type magic and if the mp is above or equal mp cost
-                    if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 2 && totalPlayers[playerPosition][2] >= totalWeapon[(totalPlayers[playerPosition][11])][6])
-                    {
-                        // Subtract mp by mp cost of weapon
-                        totalPlayers[playerPosition][2] -= totalWeapon[(totalPlayers[playerPosition][11])][6];
+                    weaponCreated = IfInteract.swordInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition);
+                }
 
-                        return weaponCreated = IfInteract.swordInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition);
-                    }
-                    else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 0)
-                    {
-                        return weaponCreated = IfInteract.swordInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition);
-                    }
-                    else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 1)
-                    {
-                        // later
+                if (z is Rectangle && ((string)z.Tag == "projectile-up" || (string)z.Tag == "projectile-down" || (string)z.Tag == "projectile-left" || (string)z.Tag == "projectile-right"))
+                {
+                    Rect projectile = new Rect(Canvas.GetLeft(z), Canvas.GetTop(z), z.Width, z.Height);
 
-                        return weaponCreated;
-                    }
-                    else if (totalPlayers[playerPosition][2] < totalPlayers[playerPosition][13])
-                    {
-
-                        z.Height = 0;
-                        z.Width = 0;
-
-                        return weaponCreated = IfInteract.swordInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition);
-                    }
-
-
+                     IfInteract.projectileInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition, projectile, leftRect, rightRect, upRect, downRect);
                 }
 
 
@@ -1083,7 +1094,7 @@ namespace Start_Game
                         {
 
 
-                            if (z is Rectangle && (string)z.Tag == "weapon-sword-phys")
+                            if (z is Rectangle && (string)z.Tag == "weapon-sword-phys" || (string)z.Tag == "projectile-right" || (string)z.Tag == "projectile-left" || (string)z.Tag == "projectile-up" || (string)z.Tag == "projectile-down")
                             {
                                 Rect sword = new Rect(Canvas.GetLeft(z), Canvas.GetTop(z), z.Width, z.Height);
 
@@ -1206,11 +1217,14 @@ namespace Start_Game
 
         }
 
-        public void coinInteract(Rectangle c, Rect PlayerHitbox, Rect coin, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize)
+        public void coinInteract(Rectangle c, Rect PlayerHitbox, Rect coin, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize, List<double> partyStats)
         {
 
             if (PlayerHitbox.IntersectsWith(coin))
             {
+
+                partyStats[0] += 1;
+
                 SavingTheMap.saveRoom(c, totalMap, playerIsInRoom, objectSize);
                 itemstoremove.Add(c);
             }
@@ -1299,6 +1313,86 @@ namespace Start_Game
 
 
         }
+
+
+
+
+
+
+        public void projectileInteract(Rectangle z, bool weaponCreated, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, animationMaker MakingAnimation, int frame, int swordAnimation, List<Rectangle> itemstoremove, string oldDirrection, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition, Rect projectile, Rect leftRect, Rect rightRect, Rect upRect, Rect downRect)
+        {
+
+
+
+
+            // Follow the Player Perfectly
+
+            var rt = new RotateTransform();
+
+            if ((string)z.Tag == "projectile-up") //up
+            {
+
+                rt.Angle = 0;
+
+                z.RenderTransform = rt;
+                z.RenderTransformOrigin = new Point(0.5, 0.5);
+
+                Canvas.SetTop(z, (Canvas.GetTop(z) - 3));
+            } else if ((string)z.Tag == "projectile-down")
+            {
+                rt.Angle = 180;
+
+                z.RenderTransform = rt;
+                z.RenderTransformOrigin = new Point(0.5, 0.5);
+
+
+                Canvas.SetTop(z, (Canvas.GetTop(z) + 3));
+
+            }
+            else if ((string)z.Tag == "projectile-left")
+            {
+
+
+                rt.Angle = 0;
+
+                z.RenderTransform = rt;
+                z.RenderTransformOrigin = new Point(0.5, 0.5);
+
+                Canvas.SetLeft(z, (Canvas.GetLeft(z) - 3));
+
+            }
+            else if ((string)z.Tag == "projectile-right")
+            {
+
+                rt.Angle = 180;
+
+
+                z.RenderTransform = rt;
+                z.RenderTransformOrigin = new Point(0.5, 0.5);
+
+
+                Canvas.SetLeft(z, (Canvas.GetLeft(z) + 3));
+
+            }
+
+
+            if (projectile.IntersectsWith(leftRect) || projectile.IntersectsWith(rightRect) || projectile.IntersectsWith(upRect) || projectile.IntersectsWith(downRect))
+            {
+                itemstoremove.Add(z);
+            }
+
+
+        }
+
+
+
+
+
+
+
+
+
+
 
         public string enemyMove(Rectangle y, Rectangle PlayerCharacter, List<double> enemyStats, Rect PlayerHitbox, Rect enemy, List<Rectangle> itemstoremove, DispatcherTimer dispatcherTimer, TextBlock logBox, Canvas PlayerSpace, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalEnemies, int enemyPosition, combat DealDamage, Dictionary<double, List<double>> totalWeapon, int i, TextBlock DamageDeltBlock, ProgressBar EnemyHealth, string oldDirrection, List<string> playerDirrection, bool playerIsDamaged, List<double> momentum, string enemyDirrection)
         {
@@ -1406,7 +1500,7 @@ namespace Start_Game
 
             totalEnemies[i][1] -= damage;
 
-            DamageDeltBlock.Text = $"This Enemy's Health: {totalEnemies[i][1]}";
+            DamageDeltBlock.Text = $"This Enemy's Health: {totalEnemies[i][1]}. Delt: {damage}";
             EnemyHealth.Value = totalEnemies[i][1];
 
 
@@ -2146,11 +2240,18 @@ namespace Start_Game
     // WEIRD BUG WITH ATTACK WHEN STANDING STILL
     class makeAttack
     {
-        public bool swordAttack(bool weaponCreated, string currentDirrection, List<string> playerDirrection, Canvas PlayerSpace, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition)
+        public bool swordAttack(bool weaponCreated, string currentDirrection, List<string> playerDirrection, Canvas PlayerSpace, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition, Rectangle PlayerCharacter, List<double> partyStats)
         {
-            // Create Object when pressed
+            // Create Object when pressed and object is not already there
             if (Keyboard.IsKeyDown(Key.Space) && weaponCreated == false)
             {
+
+
+                // Set fire projectile to current dirrection
+                string firedDirrection = currentDirrection;
+
+
+
                 double weaponHeight = 0;
                 double weaponWidth = 0;
                 double weaponPosition = 0;
@@ -2162,41 +2263,80 @@ namespace Start_Game
                 double weaponSelect = totalPlayers[playerPosition][11];
 
 
+                // if that weapon is a sword, magic, or gun
 
-                if (currentDirrection == playerDirrection[0] || currentDirrection == playerDirrection[1]) // If current Dirrection up or down
+
+                // if the current weapon is a magic type weapon and if using that magic weapon will not make the current player MP go bellow zero
+                if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 2 && totalPlayers[playerPosition][2] >= totalWeapon[(totalPlayers[playerPosition][11])][6])
                 {
-                    // Based on current image height stat
-                    weaponHeight = totalWeapon[weaponSelect][2];
-                    // Based on current image width stat
-                    weaponWidth = totalWeapon[weaponSelect][3];
-                    weaponPosition = 0 + totalPlayers[playerPosition][11];
+                    // Subtract mp by mp cost of weapon
+                    totalPlayers[playerPosition][2] -= totalWeapon[(totalPlayers[playerPosition][11])][6];
 
-                    makeWeapon(weaponHeight, weaponWidth, weaponPosition, weaponImage, PlayerSpace);
 
-                    return weaponCreated = true;
+                    return weaponCreated = dirrectionGoing(weaponCreated, currentDirrection, playerDirrection, PlayerSpace,totalWeapon,totalPlayers, playerPosition, weaponHeight, weaponWidth,  weaponSelect, weaponPosition, weaponImage);
 
-                }
-                if (currentDirrection == playerDirrection[2] || currentDirrection == playerDirrection[3]) // if dirrection left or right
+                } else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 0) // if weapon is melee
                 {
-                    weaponHeight = totalWeapon[weaponSelect][3];
-                    weaponWidth = totalWeapon[weaponSelect][2];
-                    weaponPosition = 0.5 + totalPlayers[playerPosition][11];
+                    return weaponCreated = dirrectionGoing(weaponCreated, currentDirrection, playerDirrection, PlayerSpace, totalWeapon, totalPlayers, playerPosition, weaponHeight, weaponWidth, weaponSelect, weaponPosition, weaponImage);
+                } else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 1 && partyStats[1] > 0) // if weapon is gun
+                {
+                    partyStats[1] -= 1;
 
-                    makeWeapon(weaponHeight, weaponWidth, weaponPosition, weaponImage, PlayerSpace);
+                    if (firedDirrection == "nothing")
+                    {
+                        firedDirrection = "up";
+                    }
 
-                    return weaponCreated = true;
+
+                    makeProjectile(weaponHeight, weaponWidth, weaponPosition, PlayerSpace, firedDirrection, PlayerCharacter);
+
+                    return weaponCreated = dirrectionGoing(weaponCreated, currentDirrection, playerDirrection, PlayerSpace, totalWeapon, totalPlayers, playerPosition, weaponHeight, weaponWidth, weaponSelect, weaponPosition, weaponImage);
                 }
 
 
+                // totalWeapon[(totalPlayers[playerPosition][11])][5] == 1 means if this can fire or not
             }
 
             return weaponCreated;
 
+
         }
+
+
+        public bool dirrectionGoing(bool weaponCreated, string currentDirrection, List<string> playerDirrection, Canvas PlayerSpace, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition, double weaponHeight, double weaponWidth, double weaponSelect, double weaponPosition, ImageBrush weaponImage)
+        {
+            if (currentDirrection == playerDirrection[0] || currentDirrection == playerDirrection[1]) // If current Dirrection up or down
+            {
+                // Based on current image height stat
+                weaponHeight = totalWeapon[weaponSelect][2];
+                // Based on current image width stat
+                weaponWidth = totalWeapon[weaponSelect][3];
+                weaponPosition = 0 + totalPlayers[playerPosition][11];
+
+                makeWeapon(weaponHeight, weaponWidth, weaponPosition, weaponImage, PlayerSpace);
+
+                return weaponCreated = true;
+
+            }
+            if (currentDirrection == playerDirrection[2] || currentDirrection == playerDirrection[3]) // if dirrection left or right
+            {
+                weaponHeight = totalWeapon[weaponSelect][3];
+                weaponWidth = totalWeapon[weaponSelect][2];
+                weaponPosition = 0.5 + totalPlayers[playerPosition][11];
+
+                makeWeapon(weaponHeight, weaponWidth, weaponPosition, weaponImage, PlayerSpace);
+
+                return weaponCreated = true;
+            }
+
+
+            return weaponCreated;
+        }
+
 
         public void makeWeapon(double weaponHeight, double weaponWidth, double weaponPosition, ImageBrush weaponImage, Canvas PlayerSpace)
         {
-            weaponImage.ImageSource = new BitmapImage(new Uri($"C:/Users/peter/source/repos/Start_Game/Start_Game/images//weapons/{weaponPosition}.png"));
+            weaponImage.ImageSource = new BitmapImage(new Uri($"C:/Users/peter/source/repos/Start_Game/Start_Game/images/weapons/{weaponPosition}.png"));
 
             Rectangle newSword = new Rectangle
             {
@@ -2209,6 +2349,32 @@ namespace Start_Game
 
             PlayerSpace.Children.Add(newSword);
         }
+
+
+        public void makeProjectile(double weaponHeight, double weaponWidth, double weaponPosition, Canvas PlayerSpace, string firedDirrection, Rectangle PlayerCharacter)
+        {
+
+            ImageBrush projectileImage = new ImageBrush();
+
+            projectileImage.ImageSource = new BitmapImage(new Uri($"C:/Users/peter/source/repos/Start_Game/Start_Game/images/projectile/1.png"));
+
+            Rectangle newProjectile = new Rectangle
+            {
+                Tag = $"projectile-{firedDirrection}",
+                Height = 10,
+                Width = 10,
+                Fill = projectileImage,
+                //Stroke = Brushes.Black
+            };
+
+            Canvas.SetTop(newProjectile, (Canvas.GetTop(PlayerCharacter)));
+
+            Canvas.SetLeft(newProjectile, (Canvas.GetLeft(PlayerCharacter) + PlayerCharacter.Width / 2));
+
+            PlayerSpace.Children.Add(newProjectile);
+        }
+
+
 
         public string facing(string currentDirrecton, string oldDirrection, string currentDirrection, bool weaponCreated)
         {
