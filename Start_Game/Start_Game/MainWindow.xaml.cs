@@ -42,7 +42,7 @@ namespace Start_Game
         List<double> partyStats = new List<double>()
         {
             // coins, ammo, holy cross, key, bomb
-            0, 20, 3, 0, 0
+            20, 20, 3, 0, 0
 
         };
 
@@ -127,7 +127,7 @@ namespace Start_Game
 
 
         // total amount of weapons
-        const int countWeapons = 6;
+        const int countWeapons = 7;
 
         // Weapons List
         Dictionary<double, List<double>> totalWeapon = new Dictionary<double, List<double>>(countWeapons);
@@ -148,7 +148,6 @@ namespace Start_Game
         Rect PlayerHitbox;
 
         // make a new random class to generate random numbers from
-        Random rand = new Random();
 
         // If this was created
         bool weaponCreated = false;
@@ -384,6 +383,15 @@ namespace Start_Game
             }
 
 
+
+
+
+
+
+
+
+
+
             speed[0] = totalPlayers[playerPosition][8];
             speed[1] = totalPlayers[playerPosition][8];
 
@@ -480,7 +488,7 @@ namespace Start_Game
             // Actually Running The Interactions
 
 
-            CheckingForInterations.checkingItem(PlayerSpace, IfInteract, PlayerHitbox, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats);
+            CheckingForInterations.checkingItem(PlayerSpace, IfInteract, PlayerHitbox, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats, totalWeapon, totalPlayers, playerPosition, logBox, scroll);
 
 
 
@@ -527,9 +535,17 @@ namespace Start_Game
 
             }
 
+            // if mp bellow max mp, increase mp
             if (totalPlayers[playerPosition][2] < totalPlayers[playerPosition][13])
             {
                 totalPlayers[playerPosition][2] += 1;
+            }
+
+
+            // health is above max health, set it to max health instead of higher
+            if (totalPlayers[playerPosition][12] < totalPlayers[playerPosition][1])
+            {
+                totalPlayers[playerPosition][12] = totalPlayers[playerPosition][1];
             }
 
 
@@ -557,6 +573,8 @@ namespace Start_Game
                     playerIsDamaged = false;
                 }
             }
+
+
         }
 
 
@@ -706,7 +724,7 @@ namespace Start_Game
                 // Gun
                 List<double> weapon = new List<double>()
                 {
-                 3, 5, 10, 10, 1, 1, 0, 1, 0
+                 3, 5, 20, 20, 1, 1, 0, 1, 0
                 };
 
                 if (makingAllWeapons)
@@ -752,7 +770,40 @@ namespace Start_Game
                     CurrentPlayersBlock.Text += $"Crimson Death \n";
                 }
             }
+            else if (i == 6)
+            {
+                // Crimson Death
+                List<double> weapon = new List<double>()
+                {
+                 6, 10, 50, 10, 1, 1, 0, 5, 30
+                };
 
+                if (makingAllWeapons)
+                {
+                    totalWeapon[i] = weapon;
+                }
+                else
+                {
+                    CurrentPlayersBlock.Text += $"Shot Gun \n";
+                }
+            }
+            else if (i == 7)
+            {
+                // Crimson Death
+                List<double> weapon = new List<double>()
+                {
+                 7, 15, 20, 20, 2, 1, 20, 0, 0
+                };
+
+                if (makingAllWeapons)
+                {
+                    totalWeapon[i] = weapon;
+                }
+                else
+                {
+                    CurrentPlayersBlock.Text += $"Spell Blaster \n";
+                }
+            }
 
         }
 
@@ -1007,7 +1058,7 @@ namespace Start_Game
 
         }
 
-        public void checkingItem(Canvas PlayerSpace, typeInteractionChecker IfInteract, Rect PlayerHitbox, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize, List<double> partyStats)
+        public void checkingItem(Canvas PlayerSpace, typeInteractionChecker IfInteract, Rect PlayerHitbox, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize, List<double> partyStats, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition, TextBlock logBox, ScrollViewer scroll)
         {
 
             // Checking for items
@@ -1019,7 +1070,36 @@ namespace Start_Game
                     Rect coin = new Rect(Canvas.GetLeft(c), Canvas.GetTop(c), c.Width, c.Height);
                     IfInteract.coinInteract(c, PlayerHitbox, coin, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats);
                 }
-
+                else if (c is Rectangle && (string)c.Tag == "bomb")
+                {
+                    Rect bomb = new Rect(Canvas.GetLeft(c), Canvas.GetTop(c), c.Width, c.Height);
+                    IfInteract.bombInteract(c, PlayerHitbox, bomb, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats);
+                }
+                else if (c is Rectangle && (string)c.Tag == "health")
+                {
+                    Rect health = new Rect(Canvas.GetLeft(c), Canvas.GetTop(c), c.Width, c.Height);
+                    IfInteract.healthInteract(c, PlayerHitbox, health, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats, totalWeapon, totalPlayers, playerPosition);
+                }
+                else if (c is Rectangle && (string)c.Tag == "key")
+                {
+                    Rect key = new Rect(Canvas.GetLeft(c), Canvas.GetTop(c), c.Width, c.Height);
+                    IfInteract.keyInteract(c, PlayerHitbox, key, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats);
+                }
+                else if (c is Rectangle && (string)c.Tag == "holy_cross")
+                {
+                    Rect cross = new Rect(Canvas.GetLeft(c), Canvas.GetTop(c), c.Width, c.Height);
+                    IfInteract.holycrossInteract(c, PlayerHitbox, cross, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats);
+                }
+                else if (c is Rectangle && (string)c.Tag == "ammo")
+                {
+                    Rect ammo = new Rect(Canvas.GetLeft(c), Canvas.GetTop(c), c.Width, c.Height);
+                    IfInteract.ammoInteract(c, PlayerHitbox, ammo, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats);
+                }
+                else if (c is Rectangle && (string)c.Tag == "weaponCrate")
+                {
+                    Rect weaponCrate = new Rect(Canvas.GetLeft(c), Canvas.GetTop(c), c.Width, c.Height);
+                    IfInteract.crateInteract(c, PlayerHitbox, weaponCrate, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats, totalPlayers,  playerPosition, totalWeapon, logBox, scroll);
+                }
             }
 
         }
@@ -1227,6 +1307,116 @@ namespace Start_Game
 
                 SavingTheMap.saveRoom(c, totalMap, playerIsInRoom, objectSize);
                 itemstoremove.Add(c);
+            }
+
+        }
+
+        public void bombInteract(Rectangle c, Rect PlayerHitbox, Rect bomb, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize, List<double> partyStats)
+        {
+
+            if (PlayerHitbox.IntersectsWith(bomb))
+            {
+
+                partyStats[4] += 1;
+
+                SavingTheMap.saveRoom(c, totalMap, playerIsInRoom, objectSize);
+                itemstoremove.Add(c);
+            }
+
+        }
+
+        public void ammoInteract(Rectangle c, Rect PlayerHitbox, Rect ammo, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize, List<double> partyStats)
+        {
+
+            if (PlayerHitbox.IntersectsWith(ammo))
+            {
+
+                partyStats[1] += 1;
+
+                SavingTheMap.saveRoom(c, totalMap, playerIsInRoom, objectSize);
+                itemstoremove.Add(c);
+            }
+
+        }
+
+        public void healthInteract(Rectangle c, Rect PlayerHitbox, Rect health, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize, List<double> partyStats, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition)
+        {
+
+            if (PlayerHitbox.IntersectsWith(health))
+            {
+
+                totalPlayers[playerPosition][1] += 50;
+
+                SavingTheMap.saveRoom(c, totalMap, playerIsInRoom, objectSize);
+                itemstoremove.Add(c);
+            }
+
+        }
+
+        public void keyInteract(Rectangle c, Rect PlayerHitbox, Rect key, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize, List<double> partyStats)
+        {
+
+            if (PlayerHitbox.IntersectsWith(key))
+            {
+                partyStats[3] += 1;
+
+
+                SavingTheMap.saveRoom(c, totalMap, playerIsInRoom, objectSize);
+                itemstoremove.Add(c);
+            }
+
+        }
+
+        public void holycrossInteract(Rectangle c, Rect PlayerHitbox, Rect cross, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize, List<double> partyStats)
+        {
+
+            if (PlayerHitbox.IntersectsWith(cross))
+            {
+                partyStats[2] += 1;
+
+
+                SavingTheMap.saveRoom(c, totalMap, playerIsInRoom, objectSize);
+                itemstoremove.Add(c);
+            }
+
+        }
+
+
+        public void crateInteract(Rectangle c, Rect PlayerHitbox, Rect weaponCrate, saveClass SavingTheMap, List<Rectangle> itemstoremove, Dictionary<int, List<int>> totalMap, int playerIsInRoom, int objectSize, List<double> partyStats, Dictionary<double, List<double>> totalPlayers, int playerPosition, Dictionary<double, List<double>> totalWeapon, TextBlock logBox, ScrollViewer scroll)
+        {
+
+            if (PlayerHitbox.IntersectsWith(weaponCrate))
+            {
+
+                // if crate above or equal 20
+                if (partyStats[0] >= 20)
+                {
+                    // reduce coin
+                    partyStats[0] -= 20;
+
+                    // Create random stat
+                    Random rand = new Random();
+
+                    int random = rand.Next(0, totalWeapon.Count);
+
+
+                    logBox.Text += "Got a new weapon! \n";
+
+                    totalPlayers[playerPosition][11] = random;
+
+
+                    SavingTheMap.saveRoom(c, totalMap, playerIsInRoom, objectSize);
+                    itemstoremove.Add(c);
+
+                } else
+                {
+                    logBox.Text += "Not enough money! \n";
+
+                }
+
+                scroll.ScrollToEnd();
+
+
             }
 
         }
@@ -1980,6 +2170,11 @@ namespace Start_Game
 
             int enemy = 0;
 
+            string item = "";
+
+            // 0 is coin, 1 is ammo, 2 is bomb, 3 is key, 4 is health, 5 is holy cross, 6 is random
+
+
             // Creating a map based on an array
             while (generateRoom < 100)
             {
@@ -2017,8 +2212,10 @@ namespace Start_Game
                     {
                         row++;
 
+
+                        MakingTheObjects.drawItem(row, col, "coin", objectSize, 20, 20, PlayerSpace, "coin", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/coin.png");
+
                         // Get Function
-                        MakingTheObjects.makeItem(row, col, "coin", objectSize, PlayerSpace);
                     }
                     else if (room[generateRoom] == 5) // generate a textbox
                     {
@@ -2028,20 +2225,122 @@ namespace Start_Game
 
                         if (playerIsInRoom == 56)
                         {
-                            text = "Welcome to the tutorial! Use the arrow keys to move! Use the spacebar to attack! You control the blocky player in the middle. However if you look to the side, the name highlighted in blue is the party member you control. Use the ZXCV keys to switch between them. Go to the left to fight enemies, go up to learn about items, go to the right to find treasure, and go down to get to the exit. The goal of every game is to find the exit and escape to the next map!";
+                            text = "Welcome to the tutorial! \n Go to the left to fight enemies, go up to learn about items, go to the right to find treasure, and go down to get to the exit.";
                         }
                         else if (playerIsInRoom == 55)
                         {
-                            text = "Enemies endlessly respawn from set points! If you have a [holy relic] you can stop the spawning but only in that room";
+                            text = "Enemies endlessly respawn from set points! \n If you have a [holy relic] you can stop the spawning but only in that room";
                         }
                         else if (playerIsInRoom == 46)
                         {
-                            text = "These are items. Touching them will give you stuff but removes them permanently. A coin can be used to open crates. A heart for health. A bullet for a gun.";
+                            text = "These are items. Touching them will give you stuff. \n Coins are used for shops. Ammo for guns. Hearts for health. Keys to open things. Bombs to blow things up. Crosses to destroy enemies.";
+                        } else if (playerIsInRoom == 57)
+                        {
+                            text = "This is a chest. Every chest costs 20 coins at first and grows over time. Spending the money gives you a random item!";
                         }
 
 
                         // Get Function
                         MakingTheObjects.makeText(text, DisplayDateTextBlock2, scroll);
+                    }
+                    else if (room[generateRoom] == 6)
+                    {
+                        row++;
+
+                        // Get Function
+                        MakingTheObjects.drawItem(row, col, "ammo", objectSize, 20, 20, PlayerSpace, "ammo", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/ammo.png");
+                    }
+                    else if (room[generateRoom] == 7)
+                    {
+                        row++;
+
+                        // Get Function
+                        MakingTheObjects.drawItem(row, col, "bomb", objectSize, 20, 20, PlayerSpace, "bomb", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/bomb.png");
+                    }
+                    else if (room[generateRoom] == 8)
+                    {
+                        row++;
+
+                        // Get Function
+                        MakingTheObjects.drawItem(row, col, "key", objectSize, 20, 20, PlayerSpace, "key", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/key.png");
+                    }
+                    else if (room[generateRoom] == 9)
+                    {
+                        row++;
+
+                        // Get Function
+                        MakingTheObjects.drawItem(row, col, "health", objectSize, 20, 20, PlayerSpace, "health", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/health.png");
+                    }
+                    else if (room[generateRoom] == 10)
+                    {
+                        row++;
+
+                        // Get Function
+                        MakingTheObjects.drawItem(row, col, "holy_cross", objectSize, 20, 20, PlayerSpace, "holy_cross", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/holy_cross.png");
+                    }
+                    else if (room[generateRoom] == 11) // randomly generate items
+                    {
+                        row++;
+
+                        Random rand = new Random();
+                        
+                        int random = rand.Next(0,100);
+
+
+                        if (random < 50) // ammo
+                        {
+                            
+                            room[generateRoom] = 4;
+
+                            MakingTheObjects.drawItem(row, col, "coin", objectSize, 20, 20, PlayerSpace, "coin", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/coin.png");
+                        }
+                        else if (random < 80)
+                        {
+
+                            room[generateRoom] = 6;
+
+                            MakingTheObjects.drawItem(row, col, "ammo", objectSize, 20, 20, PlayerSpace, "ammo", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/ammo.png");
+
+                        }
+                        else if (random < 90)
+                        {
+                            room[generateRoom] = 7;
+
+                            MakingTheObjects.drawItem(row, col, "bomb", objectSize, 20, 20, PlayerSpace, "bomb", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/bomb.png");
+
+                        }
+                        else if (random < 95)
+                        {
+                            room[generateRoom] = 9;
+
+                            MakingTheObjects.drawItem(row, col, "health", objectSize, 20, 20, PlayerSpace, "health", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/health.png");
+
+                        }
+                        else if (random < 98)
+                        {
+
+                            room[generateRoom] = 8;
+
+                            MakingTheObjects.drawItem(row, col, "key", objectSize, 20, 20, PlayerSpace, "key", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/key.png");
+
+                        }
+                        else if (random < 99)
+                        {
+
+                            room[generateRoom] = 10;
+
+                            MakingTheObjects.drawItem(row, col, "holy_cross", objectSize, 20, 20, PlayerSpace, "holy_cross", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/holy_cross.png");
+
+                        }
+
+
+                    }
+                    else if (room[generateRoom] == 12) // weapon crate
+                    {
+                        row++;
+
+                        // Get Function
+                        MakingTheObjects.drawItem(row, col, "weaponCrate", objectSize, 40, 40, PlayerSpace, "weaponCrate", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/crate.png");
                     }
                     else
                     {
@@ -2162,12 +2461,6 @@ namespace Start_Game
 
         }
 
-        public void makeItem(int row, int col, string itemType, int objectSize, Canvas PlayerSpace)
-        {
-            // Coin
-            drawItem(row, col, itemType, objectSize, 20, 20, PlayerSpace, "coin", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/5.png");
-        }
-
         public void makeText(string innerText, TextBlock DisplayDateTextBlock2, ScrollViewer scroll)
         {
             DisplayDateTextBlock2.Text += $"{innerText} \n";
@@ -2190,8 +2483,6 @@ namespace Start_Game
                 Width = width,
                 Fill = Image
             };
-
-            newImage.Stroke = Brushes.Black;
 
             Canvas.SetLeft(newImage, (row * objectSize));
             Canvas.SetTop(newImage, (col * objectSize));
@@ -2516,10 +2807,10 @@ namespace Start_Game
                 List<int> setUpMap = new List<int>()
                 {
                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 0, 0, 0, 0, 0, 0, 0, 5, 1,
                     1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                     1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                    0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    0, 0, 0, 0, 0, 0, 12, 0, 0, 1,
                     0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                     1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                     1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -2553,11 +2844,11 @@ namespace Start_Game
                 {
                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                     1, 0, 0, 0, 0, 0, 0, 0, 5, 1,
-                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                    1, 0, 0, 4, 0, 0, 4, 0, 0, 1,
-                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-                    1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 6, 7, 8, 9, 10, 0, 0, 0, 1,
+                    1, 11, 0, 4, 0, 0, 4, 0, 0, 1,
+                    1, 11, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 11, 0, 0, 0, 0, 0, 0, 0, 1,
+                    1, 11, 0, 0, 0, 0, 0, 0, 0, 1,
                     1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                     1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
                     1, 1, 1, 1, 0, 0, 1, 1, 1, 1

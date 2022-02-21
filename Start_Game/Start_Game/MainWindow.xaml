@@ -72,9 +72,9 @@
 
 
         <TextBlock x:Name="DisplayDateTextBlock" Text="Log " FontSize="16" FontWeight="Bold" Canvas.Top="480" Canvas.Left="10"/>
-        <ScrollViewer Height = "200" Width = "505" Canvas.Left="10" Canvas.Top="500" Name="scroll"
+        <ScrollViewer Height = "200" Width = "690" Canvas.Left="10" Canvas.Top="500" Name="scroll"
             HorizontalScrollBarVisibility = "Auto" VerticalScrollBarVisibility = "Auto">
-            <TextBlock x:Name="logBox" Text="" FontSize="10" FontWeight="Bold" TextWrapping="WrapWithOverflow" Width="490" Height="174" />
+            <TextBlock x:Name="logBox" Text="" FontSize="10" FontWeight="Bold" TextWrapping="WrapWithOverflow" />
         </ScrollViewer>
 
 
@@ -95,6 +95,9 @@
             <Button Content="Start Game" Width="150" Canvas.Top="60" Canvas.Left="20" Tag="title" />
             <Button Content="The Tutorial" Click="Button_Click_1" Width="150" Canvas.Top="100" Canvas.Left="20" Tag="title"/>
             <Button Content="There are no settings" Width="150" Canvas.Top="140" Canvas.Left="20" Tag="title" />
+
+
+            <TextBlock Width="150" Height="343" Canvas.Top="184" Canvas.Left="20" TextWrapping="WrapWithOverflow" Text="Welcome to my game! You control a group of 4 members who want to escape their destiny. Escape three maps and the three bosses to win the game. You are under a timer where the longer you stay, the harder the game gets. If all party members die, then you will have to redo it all over again. Use the arrow keys for movement, space bar for attack. Use the ZXCV keys to switch between characters. Please make 4 players before you start a game."/>
 
 
 
