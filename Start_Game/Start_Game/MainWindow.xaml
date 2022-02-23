@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Start_Game"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="720" FocusManager.FocusedElement="{Binding ElementName=PlayerSpace}">
+        Title="MainWindow" Height="720" Width="720" Background="white" FocusManager.FocusedElement="{Binding ElementName=PlayerSpace}">
 
 
     <!-- the things above are what makes up the exported window -->
@@ -40,31 +40,33 @@
 
 
         <!-- Right Background -->
-        <Rectangle Tag="background" Canvas.Left="460" Width="240" Height="400" Stroke="Black"/>
+
+        <Rectangle Tag="background" Canvas.Left="460" Width="240" Height="400" Stroke="Black">
+        </Rectangle>
+
 
         <!-- Inventory Space -->
-        <TextBlock Tag="background" Name="Inventory" Canvas.Left="460" Width="240" Height="165" Text="" Canvas.Top="124" FontSize="7" TextWrapping="WrapWithOverflow"/>
 
-        <TextBlock Tag="background" Name="InventoryBottom" Canvas.Left="460" Width="240" Height="165" Text="" Canvas.Top="248" FontSize="7" TextWrapping="WrapWithOverflow"/>
+        <TextBlock Tag="background" Name="InventoryBottom" Canvas.Left="480" Width="200" Height="95" Text="" Canvas.Top="294" FontSize="7" TextWrapping="WrapWithOverflow"/>
 
 
 
         <!-- Health Bar -->
-        <TextBlock Name="Player1Name" Text="Player 1" Canvas.Left="470" Canvas.Top="37" Height="10" Width="65" FontSize="6"/>
-        <ProgressBar Name="mpBar1" Canvas.Left="600" Canvas.Top="40" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" Foreground="blue" />
-        <ProgressBar Name="PlayerHealth1" Canvas.Left="540" Canvas.Top="40" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" />
+        <TextBlock Name="Player1Name" Text="Player 1" Canvas.Left="485" Canvas.Top="15" Height="20" Width="200" FontSize="12" FontFamily="Courier New" />
+        <ProgressBar Name="mpBar1" Canvas.Left="485" Canvas.Top="59" Minimum="0" Maximum="100" Value="100" Height="10" Width="185" Foreground="blue" />
+        <ProgressBar Name="PlayerHealth1" Canvas.Left="485" Canvas.Top="34" Minimum="0" Maximum="100" Value="100" Height="20" Width="185" />
 
-        <TextBlock Name="Player2Name" Text="Player 2" Canvas.Left="470" Canvas.Top="57" Height="10" Width="65" FontSize="6"/>
-        <ProgressBar Name="mpBar2" Canvas.Left="600" Canvas.Top="60" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" Foreground="blue" />
-        <ProgressBar Name="PlayerHealth2" Canvas.Left="540" Canvas.Top="60" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" />
+        <TextBlock Name="Player2Name" Text="Player 2" Canvas.Left="485" Canvas.Top="84" Height="20" Width="200" FontSize="12" FontFamily="Courier New"/>
+        <ProgressBar Name="mpBar2" Canvas.Left="485" Canvas.Top="129" Minimum="0" Maximum="100" Value="100" Height="10" Width="185" Foreground="blue"  />
+        <ProgressBar Name="PlayerHealth2" Canvas.Left="485" Canvas.Top="104" Minimum="0" Maximum="100" Value="100" Height="20" Width="185" />
 
-        <TextBlock Name="Player3Name" Text="Player 3" Canvas.Left="470" Canvas.Top="77" Height="10" Width="65" FontSize="6"/>
-        <ProgressBar Name="mpBar3" Canvas.Left="600" Canvas.Top="80" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" Foreground="blue" />
-        <ProgressBar Name="PlayerHealth3" Canvas.Left="540" Canvas.Top="80" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" />
+        <TextBlock Name="Player3Name" Text="Player 3" Canvas.Left="485" Canvas.Top="149" Height="20" Width="200" FontSize="12" FontFamily="Courier New"/>
+        <ProgressBar Name="mpBar3" Canvas.Left="485" Canvas.Top="194" Minimum="0" Maximum="100" Value="100" Height="10" Width="185" Foreground="blue" />
+        <ProgressBar Name="PlayerHealth3" Canvas.Left="485" Canvas.Top="169" Minimum="0" Maximum="100" Value="100" Height="20" Width="185" />
 
-        <TextBlock Name="Player4Name" Text="Player 4" Canvas.Left="470" Canvas.Top="97" Height="10" Width="65" FontSize="6"/>
-        <ProgressBar Name="mpBar4" Canvas.Left="600" Canvas.Top="100" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" Foreground="blue" />
-        <ProgressBar Name="PlayerHealth4" Canvas.Left="540" Canvas.Top="100" Minimum="0" Maximum="100" Value="100" Height="10" Width="50" />
+        <TextBlock Name="Player4Name" Text="Player 4" Canvas.Left="485" Canvas.Top="224" Height="20" Width="200" FontSize="12" FontFamily="Courier New"/>
+        <ProgressBar Name="mpBar4" Canvas.Left="485" Canvas.Top="269" Minimum="0" Maximum="100" Value="100" Height="10" Width="185" Foreground="blue" />
+        <ProgressBar Name="PlayerHealth4" Canvas.Left="485" Canvas.Top="244" Minimum="0" Maximum="100" Value="100" Height="20" Width="185" />
 
         <!-- Health Text -->
         <TextBlock x:Name="Health" Text="Log " FontSize="16" FontWeight="Bold" Canvas.Top="480" Canvas.Left="10"/>
@@ -74,7 +76,7 @@
         <TextBlock x:Name="DisplayDateTextBlock" Text="Log " FontSize="16" FontWeight="Bold" Canvas.Top="480" Canvas.Left="10"/>
         <ScrollViewer Height = "200" Width = "690" Canvas.Left="10" Canvas.Top="500" Name="scroll"
             HorizontalScrollBarVisibility = "Auto" VerticalScrollBarVisibility = "Auto">
-            <TextBlock x:Name="logBox" Text="" FontSize="10" FontWeight="Bold" TextWrapping="WrapWithOverflow" />
+            <TextBlock x:Name="logBox" Text="" FontSize="10" FontWeight="Bold" TextWrapping="WrapWithOverflow" Opacity="100" />
         </ScrollViewer>
 
 
@@ -84,6 +86,8 @@
         <!-- Title Screen-->
 
 
+
+        
         
         <Canvas Name="TitleSpace">
             <Rectangle Name="TitleScreen" Width="720" Height="720" Fill="White" Tag="title" />
@@ -131,7 +135,10 @@
             <TextBlock Name="CurrentPlayersBlock" TextWrapping="WrapWithOverflow" Width="295" Height="339" Canvas.Top="90" Canvas.Left="370" Text="" Tag="title" FontSize="10"/>
 
         </Canvas>
+        
+        
 
+        
 
 
     </Canvas>

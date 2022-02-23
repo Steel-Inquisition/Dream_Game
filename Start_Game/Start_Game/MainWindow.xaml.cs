@@ -46,6 +46,11 @@ namespace Start_Game
 
         };
 
+
+
+
+
+
         string enemyHitDirrection = "none";
 
         // Current Stat
@@ -240,9 +245,6 @@ namespace Start_Game
 
             // Automatic change name to [insert]
             GetName.Text = "Person";
-
-            makingAllWeapons = false;
-
         }
 
         private void StartTheGame()
@@ -345,6 +347,9 @@ namespace Start_Game
             // Enemies
             setUpEnemies SetUpTheEnemy = new setUpEnemies();
             combat DealDamage = new combat();
+
+
+            itemUsage usageTheItem = new itemUsage();
 
 
             // Check if game is over
@@ -492,10 +497,10 @@ namespace Start_Game
 
 
 
-  
 
+            // Holy Key Usage
 
-
+            usageTheItem.holyCrossUse(totalMap, playerIsInRoom, partyStats, PlayerSpace, enemyId, itemstoremove);
 
 
 
@@ -620,7 +625,6 @@ namespace Start_Game
         {
             if (playersDrawn == maxPlayers)
             {
-                Inventory.Text = CurrentPlayersBlock.Text;
                 TitleSpace.Children.Clear();
 
                 StartTheGame();
@@ -674,14 +678,8 @@ namespace Start_Game
                  0, 10, 30, 15, 0, 0, 0, 0, 70
                 };
 
-                if (makingAllWeapons)
-                {
-                    totalWeapon[i] = weapon;
-                }
-                else
-                {
-                    CurrentPlayersBlock.Text += $"Dagger \n";
-                }
+
+                totalWeapon[i] = weapon;
 
 
             }
@@ -693,14 +691,8 @@ namespace Start_Game
                  1, 20, 45, 15, 0, 0, 0, 0, 50
                 };
 
-                if (makingAllWeapons)
-                {
-                    totalWeapon[i] = weapon;
-                }
-                else
-                {
-                    CurrentPlayersBlock.Text += $"Sword \n";
-                }
+
+                totalWeapon[i] = weapon;
             }
             else if (i == 2)
             {
@@ -710,14 +702,8 @@ namespace Start_Game
                  2, 20, 70, 5, 0, 0, 0, 0, 20
                 };
 
-                if (makingAllWeapons)
-                {
-                    totalWeapon[i] = weapon;
-                }
-                else
-                {
-                    CurrentPlayersBlock.Text += $"Spear \n";
-                }
+
+                totalWeapon[i] = weapon;
             }
             else if (i == 3)
             {
@@ -727,14 +713,8 @@ namespace Start_Game
                  3, 5, 20, 20, 1, 1, 0, 1, 0
                 };
 
-                if (makingAllWeapons)
-                {
-                    totalWeapon[i] = weapon;
-                }
-                else
-                {
-                    CurrentPlayersBlock.Text += $"Gun \n";
-                }
+
+                totalWeapon[i] = weapon;
             }
             else if (i == 4)
             {
@@ -744,14 +724,9 @@ namespace Start_Game
                  4, 40, 50, 50, 2, 0, 80, 0, 60
                 };
 
-                if (makingAllWeapons)
-                {
-                    totalWeapon[i] = weapon;
-                }
-                else
-                {
-                    CurrentPlayersBlock.Text += $"Fire Book \n";
-                }
+
+                totalWeapon[i] = weapon;
+
             }
             else if (i == 5)
             {
@@ -761,14 +736,9 @@ namespace Start_Game
                  5, 80, 70, 10, 2, 0, 100, 0, 30
                 };
 
-                if (makingAllWeapons)
-                {
-                    totalWeapon[i] = weapon;
-                }
-                else
-                {
-                    CurrentPlayersBlock.Text += $"Crimson Death \n";
-                }
+                totalWeapon[i] = weapon;
+
+
             }
             else if (i == 6)
             {
@@ -778,14 +748,9 @@ namespace Start_Game
                  6, 10, 50, 10, 1, 1, 0, 5, 30
                 };
 
-                if (makingAllWeapons)
-                {
-                    totalWeapon[i] = weapon;
-                }
-                else
-                {
-                    CurrentPlayersBlock.Text += $"Shot Gun \n";
-                }
+
+                totalWeapon[i] = weapon;
+
             }
             else if (i == 7)
             {
@@ -795,20 +760,11 @@ namespace Start_Game
                  7, 15, 20, 20, 2, 1, 20, 0, 0
                 };
 
-                if (makingAllWeapons)
-                {
-                    totalWeapon[i] = weapon;
-                }
-                else
-                {
-                    CurrentPlayersBlock.Text += $"Spell Blaster \n";
-                }
+
+                totalWeapon[i] = weapon;
+
+
             }
-
-        }
-
-        public void displayAllWeapons()
-        {
 
         }
     }
@@ -820,23 +776,6 @@ namespace Start_Game
     // Title
     class showStats
     {
-        public void displayStats(Dictionary<double, List<double>> totalPlayers, Dictionary<double, List<double>> totalWeapon, TextBlock CurrentPlayersBlock, TextBox GetName, string currentName, int currentStat, addWeapon AddingANewWeapon, int countWeapons, bool makingAllWeapons)
-        {
-
-            CurrentPlayersBlock.Text += $"{GetName.Text + " the " + currentName} \n";
-
-
-            for (int i = 0; i < totalPlayers[currentStat].Count; i++)
-            {
-                CurrentPlayersBlock.Text += $"{totalPlayers[currentStat][i]}, ";
-            }
-
-            AddingANewWeapon.allWeapons((int)totalPlayers[currentStat][11], totalWeapon, makingAllWeapons, CurrentPlayersBlock);
-
-            CurrentPlayersBlock.Text += $"\n";
-
-
-        }
 
         public void increaseStats(List<double> playerStats, int imageUsed, int IncreaseHealth, int IncreasedMP, int IncreasePhysical, int IncreaseMagic, int IncreaseGun, int IncreasePhysicalDefence, int IncreaseMagicalDefenceStat, int IncreaseSpeedStat, double IncreaseMpRegenStat, int IncreaseSizeStat, int weaponUsed, int IncreaseHpMax, int IncreaseMpMax)
         {
@@ -963,11 +902,6 @@ namespace Start_Game
             // Implement Names onto the other canvas bellow the title
             DrawTheStats.implementName(currentStat, Player1Name, Player2Name, Player3Name, Player4Name, currentName, GetName);
 
-            // Draw The Stats
-            DrawTheStats.displayStats(totalPlayers, totalWeapon, CurrentPlayersBlock, GetName, currentName, currentStat, AddingANewWeapon, countWeapons, makingAllWeapons);
-
-
-
 
             currentStat += 1;
 
@@ -1025,8 +959,6 @@ namespace Start_Game
             }
         }
     }
-
-
 
 
 
@@ -1098,11 +1030,13 @@ namespace Start_Game
                 else if (c is Rectangle && (string)c.Tag == "weaponCrate")
                 {
                     Rect weaponCrate = new Rect(Canvas.GetLeft(c), Canvas.GetTop(c), c.Width, c.Height);
-                    IfInteract.crateInteract(c, PlayerHitbox, weaponCrate, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats, totalPlayers,  playerPosition, totalWeapon, logBox, scroll);
+                    IfInteract.crateInteract(c, PlayerHitbox, weaponCrate, SavingTheMap, itemstoremove, totalMap, playerIsInRoom, objectSize, partyStats, totalPlayers, playerPosition, totalWeapon, logBox, scroll);
                 }
             }
 
         }
+
+
 
         public bool checkingWeapon(Canvas PlayerSpace, typeInteractionChecker IfInteract, bool weaponCreated, string currentDirrection, List<string> playerDirrection, Rectangle PlayerCharacter, animationMaker MakingAnimation, int frame, int swordAnimation, List<Rectangle> itemstoremove, string oldDirrection, Dictionary<double, List<double>> totalWeapon, Dictionary<double, List<double>> totalPlayers, int playerPosition, Rect leftRect, Rect rightRect, Rect upRect, Rect downRect)
         {
@@ -1121,7 +1055,7 @@ namespace Start_Game
                 {
                     Rect projectile = new Rect(Canvas.GetLeft(z), Canvas.GetTop(z), z.Width, z.Height);
 
-                     IfInteract.projectileInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition, projectile, leftRect, rightRect, upRect, downRect);
+                    IfInteract.projectileInteract(z, weaponCreated, currentDirrection, playerDirrection, PlayerCharacter, MakingAnimation, frame, swordAnimation, itemstoremove, oldDirrection, totalWeapon, totalPlayers, playerPosition, projectile, leftRect, rightRect, upRect, downRect);
                 }
 
 
@@ -1201,9 +1135,9 @@ namespace Start_Game
 
 
         // how much damage the enemy does
-        public void checkingEnemyDamage(Canvas PlayerSpace, List<int> enemyId, Rect PlayerHitbox, bool playerIsDamaged, Rectangle PlayerCharacter, List<string> playerDirrection, Dictionary<double, List<double>> totalEnemies, Dictionary<double, List<double>> totalPlayers, int  playerPosition, combat DealDamage)
+        public void checkingEnemyDamage(Canvas PlayerSpace, List<int> enemyId, Rect PlayerHitbox, bool playerIsDamaged, Rectangle PlayerCharacter, List<string> playerDirrection, Dictionary<double, List<double>> totalEnemies, Dictionary<double, List<double>> totalPlayers, int playerPosition, combat DealDamage)
         {
-            foreach(var y in PlayerSpace.Children.OfType<Rectangle>())
+            foreach (var y in PlayerSpace.Children.OfType<Rectangle>())
             {
                 for (int i = 0; i < enemyId.Count; i++)
                 {
@@ -1408,7 +1342,8 @@ namespace Start_Game
                     SavingTheMap.saveRoom(c, totalMap, playerIsInRoom, objectSize);
                     itemstoremove.Add(c);
 
-                } else
+                }
+                else
                 {
                     logBox.Text += "Not enough money! \n";
 
@@ -1528,7 +1463,8 @@ namespace Start_Game
                 z.RenderTransformOrigin = new Point(0.5, 0.5);
 
                 Canvas.SetTop(z, (Canvas.GetTop(z) - 3));
-            } else if ((string)z.Tag == "projectile-down")
+            }
+            else if ((string)z.Tag == "projectile-down")
             {
                 rt.Angle = 180;
 
@@ -1573,12 +1509,6 @@ namespace Start_Game
 
 
         }
-
-
-
-
-
-
 
 
 
@@ -1633,6 +1563,58 @@ namespace Start_Game
 
 
     }
+
+
+
+
+
+    class itemUsage
+    {
+        public void holyCrossUse(Dictionary<int, List<int>> totalMap, int playerIsInRoom, List<double> partyStats, Canvas PlayerSpace, List<int> enemyId, List<Rectangle> itemstoremove)
+        {
+
+
+            // if the holy cross above 0 and right shift pressed
+            if (Keyboard.IsKeyDown(Key.RightShift) && partyStats[2] > 0)
+            {
+
+                // Reduce key
+                partyStats[2] -= 1;
+
+
+                // Search the map
+                for (int x = 0; x < totalMap.Count; x++)
+                {
+
+                    // if the map of the room the player is in, and if that certain tile has an enemy is in it
+                    if (totalMap[playerIsInRoom][x] == 3)
+                    {
+                        // Set enemy to 0
+                        totalMap[playerIsInRoom][x] = 0;
+
+                    }
+                }
+
+                // get rid of all eneies on the map
+                foreach (var y in PlayerSpace.Children.OfType<Rectangle>())
+                {
+                    for (int i = 0; i < enemyId.Count; i++)
+                    {
+                        if (y is Rectangle && (string)y.Tag == $"enemy{i}")
+                        {
+                            itemstoremove.Add(y);
+                        }
+                    }
+                }
+            }
+
+
+        }
+
+    }
+
+
+
 
 
     class combat
@@ -2234,7 +2216,8 @@ namespace Start_Game
                         else if (playerIsInRoom == 46)
                         {
                             text = "These are items. Touching them will give you stuff. \n Coins are used for shops. Ammo for guns. Hearts for health. Keys to open things. Bombs to blow things up. Crosses to destroy enemies.";
-                        } else if (playerIsInRoom == 57)
+                        }
+                        else if (playerIsInRoom == 57)
                         {
                             text = "This is a chest. Every chest costs 20 coins at first and grows over time. Spending the money gives you a random item!";
                         }
@@ -2283,13 +2266,13 @@ namespace Start_Game
                         row++;
 
                         Random rand = new Random();
-                        
-                        int random = rand.Next(0,100);
+
+                        int random = rand.Next(0, 100);
 
 
                         if (random < 50) // ammo
                         {
-                            
+
                             room[generateRoom] = 4;
 
                             MakingTheObjects.drawItem(row, col, "coin", objectSize, 20, 20, PlayerSpace, "coin", "C:/Users/peter/source/repos/Start_Game/Start_Game/images/coin.png");
@@ -2564,12 +2547,14 @@ namespace Start_Game
                     totalPlayers[playerPosition][2] -= totalWeapon[(totalPlayers[playerPosition][11])][6];
 
 
-                    return weaponCreated = dirrectionGoing(weaponCreated, currentDirrection, playerDirrection, PlayerSpace,totalWeapon,totalPlayers, playerPosition, weaponHeight, weaponWidth,  weaponSelect, weaponPosition, weaponImage);
+                    return weaponCreated = dirrectionGoing(weaponCreated, currentDirrection, playerDirrection, PlayerSpace, totalWeapon, totalPlayers, playerPosition, weaponHeight, weaponWidth, weaponSelect, weaponPosition, weaponImage);
 
-                } else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 0) // if weapon is melee
+                }
+                else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 0) // if weapon is melee
                 {
                     return weaponCreated = dirrectionGoing(weaponCreated, currentDirrection, playerDirrection, PlayerSpace, totalWeapon, totalPlayers, playerPosition, weaponHeight, weaponWidth, weaponSelect, weaponPosition, weaponImage);
-                } else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 1 && partyStats[1] > 0) // if weapon is gun
+                }
+                else if (totalWeapon[(totalPlayers[playerPosition][11])][4] == 1 && partyStats[1] > 0) // if weapon is gun
                 {
                     partyStats[1] -= 1;
 
